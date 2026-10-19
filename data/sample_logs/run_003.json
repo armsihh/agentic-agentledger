@@ -1,0 +1,11 @@
+{
+  "run_id": "run_003",
+  "turns": [
+    {"agent": "Planner", "role": "agent", "content": "Splitting the report into data-collection and analysis phases.", "tool_calls": []},
+    {"agent": "Collector", "role": "agent", "content": "Collecting figures from the quarterly spreadsheet.", "tool_calls": [{"name": "read_sheet", "arguments": {"sheet": "Q3"}, "result": "ok"}]},
+    {"agent": "Analyst", "role": "agent", "content": "Computing the growth rate using an incorrect formula, giving a wrong result.", "tool_calls": [{"name": "compute", "arguments": {"formula": "qoq_growth"}, "result": "value=14.2% (incorrect, should be 4.2%)"}]},
+    {"agent": "Writer", "role": "agent", "content": "Writing the report using the analyst's figure.", "tool_calls": [{"name": "write_report", "arguments": {}, "result": "ok"}]},
+    {"agent": "Planner", "role": "agent", "content": "Report delivered but the client flagged the growth number as wrong.", "tool_calls": []}
+  ],
+  "ground_truth": {"responsible_agent": "Analyst", "decisive_step": 2}
+}

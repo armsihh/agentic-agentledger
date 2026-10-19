@@ -1,0 +1,11 @@
+{
+  "run_id": "run_001",
+  "turns": [
+    {"agent": "Planner", "role": "agent", "content": "Breaking the task into three subtasks: fetch data, transform, upload.", "tool_calls": []},
+    {"agent": "Fetcher", "role": "agent", "content": "Calling the API to fetch the dataset.", "tool_calls": [{"name": "http_get", "arguments": {"url": "https://example.com/data"}, "result": "200 OK, 1000 rows"}]},
+    {"agent": "Transformer", "role": "agent", "content": "Applying the normalisation step to the fetched rows.", "tool_calls": [{"name": "normalize", "arguments": {"rows": 1000}, "result": "ok"}]},
+    {"agent": "Uploader", "role": "agent", "content": "Uploading to the wrong bucket name, causing a permission error.", "tool_calls": [{"name": "upload", "arguments": {"bucket": "stagign-bucket"}, "result": "403 error: access denied"}]},
+    {"agent": "Planner", "role": "agent", "content": "Task failed: upload step did not complete.", "tool_calls": []}
+  ],
+  "ground_truth": {"responsible_agent": "Uploader", "decisive_step": 3}
+}

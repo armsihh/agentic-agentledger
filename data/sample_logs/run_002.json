@@ -1,0 +1,11 @@
+{
+  "run_id": "run_002",
+  "turns": [
+    {"agent": "Researcher", "role": "agent", "content": "Searching documentation for the correct API endpoint.", "tool_calls": [{"name": "search_docs", "arguments": {"query": "endpoint"}, "result": "found 3 matches"}]},
+    {"agent": "Coder", "role": "agent", "content": "Writing the function based on the documentation found.", "tool_calls": [{"name": "write_file", "arguments": {"path": "client.py"}, "result": "ok"}]},
+    {"agent": "Coder", "role": "agent", "content": "Running the tests to check the implementation.", "tool_calls": [{"name": "run_tests", "arguments": {}, "result": "3 passed"}]},
+    {"agent": "Reviewer", "role": "agent", "content": "Approving the change after a quick scan.", "tool_calls": []},
+    {"agent": "Deployer", "role": "agent", "content": "Deployment succeeded, task complete.", "tool_calls": [{"name": "deploy", "arguments": {}, "result": "ok"}]}
+  ],
+  "ground_truth": {"responsible_agent": "none", "decisive_step": -1}
+}
