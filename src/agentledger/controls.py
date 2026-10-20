@@ -1,10 +1,6 @@
-"""Control catalogue (Gap 3): predicates compiled from ISO/IEC 42001 management-system
-clauses and NIST AI RMF functions, evaluated over a ledgered run.
-
-Phase 1 ships the catalogue structure and two fully implemented predicates
-(CTRL-01, CTRL-02); the rest are declared with a clear NotImplementedError so the
-catalogue's shape is final even though most predicates are filled in during
-Phase 2's Policy Checker work.
+"""control catalogue (gap 3): predicates from iso/iec 42001 clauses and nist ai rmf
+functions, evaluated over a ledgered run. ctrl-01/02 are implemented; the rest
+are stubs for phase 2's policy checker.
 """
 from __future__ import annotations
 
@@ -23,8 +19,7 @@ class ControlResult:
 
 
 def _ctrl_01_record_keeping(run: RunLog, ledger: IntegrityLedger) -> ControlResult:
-    """ISO/IEC 42001 Clause 8 (operational control) / NIST AI RMF Govern:
-    every event in the run must have a matching, verified ledger entry."""
+    """iso 42001 clause 8 / nist ai rmf govern: every event has a verified ledger entry."""
     ok, break_index = ledger.verify()
     complete = len(ledger.entries) == len(run.events)
     passed = ok and complete
@@ -36,8 +31,7 @@ def _ctrl_01_record_keeping(run: RunLog, ledger: IntegrityLedger) -> ControlResu
 
 
 def _ctrl_02_tool_call_logged(run: RunLog, ledger: IntegrityLedger) -> ControlResult:
-    """ISO/IEC 42001 Clause 9 (monitoring) / NIST AI RMF Measure:
-    every tool call made by an agent must appear in some ledgered payload."""
+    """iso 42001 clause 9 / nist ai rmf measure: every tool call appears in the ledger."""
     tool_call_names = {tc.name for e in run.events for tc in e.tool_calls}
     ledgered_names = set()
     for entry in ledger.entries:
@@ -51,7 +45,7 @@ def _ctrl_02_tool_call_logged(run: RunLog, ledger: IntegrityLedger) -> ControlRe
 
 def _not_implemented(control_id: str) -> Callable[[RunLog, IntegrityLedger], ControlResult]:
     def _predicate(run: RunLog, ledger: IntegrityLedger) -> ControlResult:
-        raise NotImplementedError(f"{control_id} predicate is planned for Phase 2 (Policy Checker)")
+        raise NotImplementedError(f"{control_id} predicate is planned for phase 2 (policy checker)")
 
     return _predicate
 

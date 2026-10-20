@@ -21,6 +21,6 @@ def test_b0_runs_end_to_end_with_mock_provider():
 def test_b0_mock_provider_flags_the_error_turn():
     run = load_whowhen_log(SAMPLE_DIR / "run_001.json")
     prediction = run_b0(run, MockProvider())
-    # run_001's error keyword ("error") is in the Uploader's step-3 turn.
+    # run_001's error keyword is in the uploader's step-3 turn
     assert prediction.agent == "Uploader"
     assert prediction.step == 3

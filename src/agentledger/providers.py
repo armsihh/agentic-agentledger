@@ -1,5 +1,5 @@
-"""Model provider interface (B8): one hosted LLM and one local model behind the same
-interface, plus a deterministic offline mock so the pipeline runs without any API key.
+"""model provider interface (b8): hosted or local model behind one interface,
+plus an offline mock so the pipeline runs with no api key.
 """
 from __future__ import annotations
 
@@ -11,45 +11,65 @@ from abc import ABC, abstractmethod
 class LLMProvider(ABC):
     @abstractmethod
     def generate(self, prompt: str) -> str:
-        """Return the model's raw text completion for a prompt."""
+        """return the model's raw text completion for a prompt."""
 
 
 class MockProvider(LLMProvider):
-    """Deterministic, offline stand-in used by default and by the tests.
+    """deterministic, offline stand-in used by default and by the tests.
 
-    Heuristic only: picks the last agent turn whose content mentions an error
-    keyword, so `eval/run_baseline.py` and the test suite can run end-to-end
-    with no network access and no API key.
+    handles the three prompt shapes used by baselines b0/b1: json verdict,
+    yes/no per step, and upper/lower half.
     """
 
     _ERROR_WORDS = re.compile(r"\b(error|fail|exception|incorrect|wrong)\b", re.IGNORECASE)
+    _TURN = re.compile(r"\[(\d+)\]\s*(\w+):\s*(.*)")
 
-    def generate(self, prompt: str) -> str:
-        turns = re.findall(r"\[(\d+)\]\s*(\w+):\s*(.*)", prompt)
+    def _turns(self, prompt: str) -> list[tuple[int, str, str]]:
+        return [(int(s), a, c) for s, a, c in self._TURN.findall(prompt)]
+
+    def _last_error_turn(self, turns: list[tuple[int, str, str]]):
         culprit = None
         for step, agent, content in turns:
             if self._ERROR_WORDS.search(content):
-                culprit = (int(step), agent)
+                culprit = (step, agent)
+        return culprit
+
+    def generate(self, prompt: str) -> str:
+        if "'Yes' or 'No'" in prompt:
+            turns = self._turns(prompt)
+            last_content = turns[-1][2] if turns else ""
+            return "Yes" if self._ERROR_WORDS.search(last_content) else "No"
+
+        if "'upper half'" in prompt and "'lower half'" in prompt:
+            turns = self._turns(prompt)
+            culprit = self._last_error_turn(turns)
+            if culprit is None or not turns:
+                return "lower half"
+            mid = turns[0][0] + (turns[-1][0] - turns[0][0]) // 2
+            return "upper half" if culprit[0] <= mid else "lower half"
+
+        turns = self._turns(prompt)
+        culprit = self._last_error_turn(turns)
         if culprit is None and turns:
             step, agent, _ = turns[-1]
-            culprit = (int(step), agent)
+            culprit = (step, agent)
         step, agent = culprit or (0, "unknown")
         return f'{{"agent": "{agent}", "step": {step}, "rationale": "mock provider heuristic"}}'
 
 
 class AnthropicProvider(LLMProvider):
-    """Hosted provider. Requires ANTHROPIC_API_KEY and the optional `anthropic` package."""
+    """hosted provider. requires ANTHROPIC_API_KEY and the optional anthropic package."""
 
     def __init__(self, model: str = "claude-sonnet-5-5") -> None:
         try:
             import anthropic
-        except ImportError as exc:  # pragma: no cover - exercised only without the extra installed
+        except ImportError as exc:
             raise RuntimeError(
-                "Install the 'hosted' extra (pip install -e .[hosted]) to use AnthropicProvider"
+                "install the 'hosted' extra (pip install -e .[hosted]) to use AnthropicProvider"
             ) from exc
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
-            raise RuntimeError("Set ANTHROPIC_API_KEY to use AnthropicProvider")
+            raise RuntimeError("set ANTHROPIC_API_KEY to use AnthropicProvider")
         self._client = anthropic.Anthropic(api_key=api_key)
         self._model = model
 
@@ -63,7 +83,7 @@ class AnthropicProvider(LLMProvider):
 
 
 def get_default_provider() -> LLMProvider:
-    """Pick AnthropicProvider when a key is configured, else fall back to the mock."""
+    """anthropic if a key is set, else the offline mock."""
     if os.environ.get("ANTHROPIC_API_KEY"):
         return AnthropicProvider()
     return MockProvider()

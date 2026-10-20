@@ -1,9 +1,6 @@
-"""End-to-end workflow: ingest logs -> build an Integrity Ledger -> run baseline B0
--> check the implemented controls -> report accuracy and write results to disk.
+"""end-to-end: ingest -> ledger -> baseline b0 -> control check -> results.
 
-Usage:
-    python eval/run_baseline.py
-    python eval/run_baseline.py --logs data/sample_logs
+usage: python eval/run_baseline.py [--logs data/sample_logs]
 """
 from __future__ import annotations
 
@@ -55,7 +52,7 @@ def main() -> None:
 
         chain_ok, _ = ledger.verify()
         control_results = []
-        for control in CONTROL_CATALOGUE[:2]:  # only the implemented predicates (CTRL-01/02)
+        for control in CONTROL_CATALOGUE[:2]:  # only the implemented predicates
             cr = check_control(control["id"], run, ledger)
             control_results.append({"control_id": cr.control_id, "passed": cr.passed, "evidence": cr.evidence})
 

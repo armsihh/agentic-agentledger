@@ -1,7 +1,4 @@
-"""Baseline B0 (B10): the whole log goes to one prompt, which returns a bare
-verdict - no evidence citation, no ledger check, non-agentic. This is the
-weakest baseline the full AgentLedger system is compared against.
-"""
+"""baseline b0: whole log, one prompt, bare verdict. non-agentic. from scratch."""
 from __future__ import annotations
 
 import json

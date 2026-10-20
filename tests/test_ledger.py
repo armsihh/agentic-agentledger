@@ -27,7 +27,7 @@ def test_tamper_is_detected():
     ledger.append({"event_id": "e1"})
     ledger.append({"event_id": "e2"})
 
-    # Tamper with the middle entry's payload without recomputing its hash.
+    # tamper with the middle entry without recomputing its hash
     ledger.entries[1].payload["event_id"] = "tampered"
 
     ok, break_index = ledger.verify()

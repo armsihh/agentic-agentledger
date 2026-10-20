@@ -1,4 +1,4 @@
-"""Normalised event schema that every log format is ingested into (B8 state/context structure)."""
+"""normalised event schema used by every log format (b8 state/context structure)."""
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -15,7 +15,7 @@ class ToolCall(BaseModel):
 
 
 class Event(BaseModel):
-    """One normalised step in an agent run, regardless of the source log format."""
+    """one normalised step in an agent run."""
 
     event_id: str
     run_id: str
@@ -28,14 +28,14 @@ class Event(BaseModel):
 
 
 class GroundTruth(BaseModel):
-    """Annotated failure attribution, when the source log carries one (e.g. Who&When)."""
+    """annotated failure attribution, when the source log has one."""
 
     responsible_agent: str
     decisive_step: int
 
 
 class RunLog(BaseModel):
-    """A full normalised run: an ordered sequence of events plus optional ground truth."""
+    """a full normalised run: ordered events plus optional ground truth."""
 
     run_id: str
     source_format: str

@@ -1,10 +1,4 @@
-"""Integrity Ledger: SHA-256 hash-chained, append-only record of normalised events (Gap 2).
-
-Each entry hashes its own payload together with the previous entry's hash, so any
-edit, deletion or re-ordering of a past entry breaks the chain from that point on.
-This is the Phase 1 slice of B8's "Integrity Ledger"; PROV-style links to upstream
-tool calls are the next increment.
-"""
+"""sha-256 hash-chained, append-only ledger of normalised events (gap 2)."""
 from __future__ import annotations
 
 import hashlib
@@ -48,7 +42,7 @@ class IntegrityLedger:
         return entry
 
     def verify(self) -> tuple[bool, int | None]:
-        """Recompute every hash in order. Returns (ok, index_of_first_break)."""
+        """recompute every hash in order. returns (ok, index_of_first_break)."""
         prev_hash = GENESIS_HASH
         for entry in self.entries:
             if entry.prev_hash != prev_hash:
