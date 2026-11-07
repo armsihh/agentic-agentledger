@@ -117,6 +117,7 @@ def main() -> None:
                 "agent_accuracy": agent_acc,
                 "step_accuracy": step_acc,
                 "verified_rate": verified_rate,
+                "provider_stats": provider.stats(),  # E6: calls, latency, char volume
                 "runs": per_run,
             },
             indent=2,

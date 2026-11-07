@@ -95,7 +95,10 @@ def main() -> None:
     out_path = Path(args.out)
     out_path.parent.mkdir(exist_ok=True, parents=True)
     out_path.write_text(
-        json.dumps({"agent_accuracy": agent_acc, "step_accuracy": step_acc, "runs": results}, indent=2),
+        json.dumps(
+            {"agent_accuracy": agent_acc, "step_accuracy": step_acc, "provider_stats": provider.stats(), "runs": results},
+            indent=2,
+        ),
         encoding="utf-8",
     )
     print(f"Wrote {out_path}")

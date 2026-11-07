@@ -82,6 +82,8 @@ def main() -> None:
         print(f"\n[{method}] agent-level accuracy: {agent_acc:.2%} | step-level accuracy: {step_acc:.2%}")
         summary[method] = {"agent_accuracy": agent_acc, "step_accuracy": step_acc, "runs": per_run}
 
+    summary["provider_stats"] = provider.stats()
+
     out_path = Path(args.out)
     out_path.parent.mkdir(exist_ok=True, parents=True)
     out_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
