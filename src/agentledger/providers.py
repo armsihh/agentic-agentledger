@@ -112,12 +112,26 @@ class AnthropicProvider(LLMProvider):
 
 
 class GroqProvider(LLMProvider):
-    """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package."""
+    """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package.
 
+    each model on the free tier has its own ~200k-tokens/day cap, easy to exhaust across a long
+    eval run. rather than fail the whole run, this falls back through a chain of free models,
+    advancing whenever one's daily quota is hit (a reliability mechanism in its own right, not
+    just a workaround -- the same "retry/recover" behaviour the Phase 2 brief asks the system to
+    demonstrate).
+    """
+
+    _FALLBACK_CHAIN = [
+        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "openai/gpt-oss-safeguard-20b",
+        "allam-2-7b",
+    ]
     _MIN_GAP_SECONDS = 3.0  # paces calls so a long batch doesn't burst past the free-tier TPM cap
     _last_call_at: float = 0.0
 
-    def __init__(self, model: str = "qwen/qwen3.8-27b") -> None:
+    def __init__(self, model: str | None = None) -> None:
         super().__init__()
         try:
             import groq
@@ -129,40 +143,58 @@ class GroqProvider(LLMProvider):
         if not api_key:
             raise RuntimeError("set GROQ_API_KEY to use GroqProvider")
         self._client = groq.Groq(api_key=api_key, timeout=30.0)
-        self._model = model
+        self._models = [model] if model else list(self._FALLBACK_CHAIN)
+        self._model_idx = 0
+        self.model_switches: list[str] = []  # audit trail: which models this run actually used
+
+    @property
+    def _model(self) -> str:
+        return self._models[self._model_idx]
 
     def _generate_impl(self, prompt: str) -> str:
-        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls.
-
-        a daily-token-quota error (TPD) won't clear within any reasonable backoff window, so it
-        fails fast instead of burning ~3-5 minutes of retries per call before giving up anyway.
-        """
+        """calls the free-tier API with pacing + backoff, falling back to the next model on a
+        daily-token-quota error (TPD) since that can't clear within any reasonable backoff window."""
         import groq
 
-        wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
-        if wait > 0:
-            time.sleep(wait)
+        while True:
+            wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
+            if wait > 0:
+                time.sleep(wait)
 
-        for attempt in range(10):
-            try:
-                response = self._client.chat.completions.create(
-                    model=self._model,
-                    max_tokens=500,
-                    messages=[{"role": "user", "content": prompt}],
-                )
-                GroqProvider._last_call_at = time.monotonic()
-                return response.choices[0].message.content
-            except (groq.RateLimitError, groq.APIStatusError) as exc:
-                message = str(exc).lower()
-                if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
-                    raise
-                if "tokens per day" in message or " tpd" in message:
-                    raise RuntimeError(
-                        f"GroqProvider: daily token quota exhausted for model '{self._model}' - "
-                        f"switch models (quotas are per-model) or wait for it to reset: {exc}"
-                    ) from exc
-                time.sleep(min(2 ** attempt, 30))
-        raise RuntimeError("GroqProvider: rate-limited after repeated retries")
+            exhausted = False
+            for attempt in range(6):
+                try:
+                    response = self._client.chat.completions.create(
+                        model=self._model,
+                        max_tokens=500,
+                        messages=[{"role": "user", "content": prompt}],
+                    )
+                    GroqProvider._last_call_at = time.monotonic()
+                    return response.choices[0].message.content
+                except (groq.RateLimitError, groq.APIStatusError) as exc:
+                    message = str(exc).lower()
+                    if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
+                        raise
+                    if "tokens per day" in message or " tpd" in message:
+                        exhausted = True
+                        break
+                    time.sleep(min(2 ** attempt, 30))
+
+            if exhausted and self._model_idx + 1 < len(self._models):
+                self.model_switches.append(self._model)
+                self._model_idx += 1
+                continue  # retry immediately on the next model in the chain
+
+            raise RuntimeError(
+                f"GroqProvider: no usable model left (tried {self._models[: self._model_idx + 1]}); "
+                "all hit their daily quota or kept rate-limiting"
+            )
+
+    def stats(self) -> dict:
+        base = super().stats()
+        base["model"] = self._model
+        base["model_switches"] = list(self.model_switches)
+        return base
 
 
 def get_default_provider() -> LLMProvider:
