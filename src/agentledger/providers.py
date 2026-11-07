@@ -105,7 +105,7 @@ class AnthropicProvider(LLMProvider):
     def _generate_impl(self, prompt: str) -> str:
         response = self._client.messages.create(
             model=self._model,
-            max_tokens=256,
+            max_tokens=500,
             messages=[{"role": "user", "content": prompt}],
         )
         return response.content[0].text
@@ -143,7 +143,7 @@ class GroqProvider(LLMProvider):
             try:
                 response = self._client.chat.completions.create(
                     model=self._model,
-                    max_tokens=256,
+                    max_tokens=500,
                     messages=[{"role": "user", "content": prompt}],
                 )
                 GroqProvider._last_call_at = time.monotonic()
