@@ -39,7 +39,16 @@ retrying a window that cannot possibly clear in time. The E1/E2 runs in the tabl
 `provider_stats` means both runs started on the exhausted model and recovered automatically
 mid-run with zero errors, landing on `openai/gpt-oss-120b`.
 
-**Honest limitation:** the E3/E5 system numbers above predate this fix, so their reliability
-figures (the E5 column's 4 errors) are not representative of the current, fixed pipeline — a
-re-run under the current code would be expected to show 0 errors, matching E1/E2. Re-running E3/E5
-to confirm this directly is a fast follow-up, not yet done as of this writeup.
+**Update after actually re-running at larger scale:** a second bug was found and fixed — the
+fallback only advanced on a *confirmed* "tokens per day" error, not on plain retry-exhaustion, so
+a model that kept rate-limiting without that exact wording stalled the chain early (it reached
+`openai/gpt-oss-safeguard-20b` without ever trying `allam-2-7b`). Fixed, and confirmed working: a
+larger n=40 attempt correctly cycled through all 5 models (`model_switches` shows all 4 earlier
+ones triggered). **But it still had 18/40 runs error out**, because by that point in the session
+we had exhausted the *combined* daily quota across all 5 free models at once from the volume of
+testing done today — the fallback chain has nowhere left to fall back to when every link is
+simultaneously near its cap. Quota does recover (a check minutes later showed all 5 models
+available again), but recovers slower than a 40-run batch burns it. **Conclusion:** the n=20
+results elsewhere in this repo (0 errors) are the reliable, reportable sample; a clean n=40+ run
+is a real capacity question, not a bug, and would need either a paid tier or spacing batches far
+enough apart in time to let quota recover between them.

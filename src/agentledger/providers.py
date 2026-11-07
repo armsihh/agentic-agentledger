@@ -161,7 +161,6 @@ class GroqProvider(LLMProvider):
             if wait > 0:
                 time.sleep(wait)
 
-            exhausted = False
             for attempt in range(6):
                 try:
                     response = self._client.chat.completions.create(
@@ -176,17 +175,20 @@ class GroqProvider(LLMProvider):
                     if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
                         raise
                     if "tokens per day" in message or " tpd" in message:
-                        exhausted = True
-                        break
+                        break  # daily quota won't clear within any backoff window -- stop retrying, switch models
                     time.sleep(min(2 ** attempt, 30))
 
-            if exhausted and self._model_idx + 1 < len(self._models):
+            # advance on EITHER a confirmed daily-quota hit or plain retry exhaustion (a model
+            # that keeps rate-limiting for 6 backoff rounds is as unusable right now as one
+            # whose quota is confirmed exhausted) -- fixes a bug where retry-exhaustion raised
+            # immediately instead of trying the next model in the chain.
+            if self._model_idx + 1 < len(self._models):
                 self.model_switches.append(self._model)
                 self._model_idx += 1
                 continue  # retry immediately on the next model in the chain
 
             raise RuntimeError(
-                f"GroqProvider: no usable model left (tried {self._models[: self._model_idx + 1]}); "
+                f"GroqProvider: no usable model left (tried {self._models}); "
                 "all hit their daily quota or kept rate-limiting"
             )
 
