@@ -52,11 +52,16 @@ def main() -> None:
         print(f"Loaded {len(runs)} sample run(s) from {args.logs}")
 
     results = []
-    correct_agent = correct_both = 0
+    correct_agent = correct_both = errors = 0
     for i, run in enumerate(runs, 1):
         print(f"  {i}/{len(runs)} {run.run_id}", end="\r")
         ledger = build_ledger(run)
-        prediction = run_b0(run, provider)
+        try:
+            prediction = run_b0(run, provider)
+        except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
+            errors += 1
+            results.append({"run_id": run.run_id, "error": str(exc)})
+            continue
 
         chain_ok, _ = ledger.verify()
         control_results = []
@@ -82,6 +87,8 @@ def main() -> None:
         )
 
     n = len(runs) or 1
+    if errors:
+        print(f"\n{errors} run(s) errored out and were excluded from accuracy")
     agent_acc, step_acc = correct_agent / n, correct_both / n
     print(f"\nB0 agent-level accuracy: {agent_acc:.2%} | step-level accuracy: {step_acc:.2%} (n={len(runs)})")
 

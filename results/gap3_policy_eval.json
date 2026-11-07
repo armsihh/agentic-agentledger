@@ -1,0 +1,753 @@
+{
+  "metrics": {
+    "CTRL-03": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 50
+    },
+    "CTRL-07": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 50
+    },
+    "CTRL-11": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 50
+    }
+  },
+  "runs": [
+    {
+      "run_id": "ctrl03-clean-0",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-1",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-2",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-3",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-4",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-5",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-6",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-7",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-8",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-clean-9",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-0",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-1",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-2",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-3",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-4",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-5",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-6",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-7",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-8",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl03-violate-9",
+      "planted_violations": [
+        "CTRL-03"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-0",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-1",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-2",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-3",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-4",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-5",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-6",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-7",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-8",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-clean-9",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-0",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-1",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-2",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-3",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-4",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-5",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-6",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-7",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-8",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl07-violate-9",
+      "planted_violations": [
+        "CTRL-07"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": false,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-0",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-1",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-2",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-3",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-4",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-5",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-6",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-7",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-8",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-clean-9",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-0",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-1",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-2",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-3",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-4",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-5",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-6",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-7",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-8",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    },
+    {
+      "run_id": "ctrl11-violate-9",
+      "planted_violations": [
+        "CTRL-11"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-07": true,
+        "CTRL-11": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "run_id": "ctrl11-clean-7",
+  "turns": [
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "logging in",
+      "tool_calls": [
+        {
+          "name": "auth",
+          "arguments": {
+            "token_ref": "vault://ref/1"
+          },
+          "result": "ok"
+        }
+      ]
+    }
+  ],
+  "violated_controls": []
+}

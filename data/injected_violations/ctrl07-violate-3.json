@@ -1,0 +1,20 @@
+{
+  "run_id": "ctrl07-violate-3",
+  "turns": [
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "an error occurred during the upload",
+      "tool_calls": []
+    },
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "task ended",
+      "tool_calls": []
+    }
+  ],
+  "violated_controls": [
+    "CTRL-07"
+  ]
+}

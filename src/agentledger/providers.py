@@ -99,22 +99,30 @@ class GroqProvider(LLMProvider):
         self._client = groq.Groq(api_key=api_key)
         self._model = model
 
+    _MIN_GAP_SECONDS = 3.0  # paces calls so a long batch doesn't burst past the free-tier TPM cap
+    _last_call_at: float = 0.0
+
     def generate(self, prompt: str) -> str:
-        """calls the free-tier API with backoff on rate limits, since eval runs make many calls."""
+        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls."""
         import groq
 
-        for attempt in range(6):
+        wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
+        if wait > 0:
+            time.sleep(wait)
+
+        for attempt in range(10):
             try:
                 response = self._client.chat.completions.create(
                     model=self._model,
                     max_tokens=256,
                     messages=[{"role": "user", "content": prompt}],
                 )
+                GroqProvider._last_call_at = time.monotonic()
                 return response.choices[0].message.content
             except (groq.RateLimitError, groq.APIStatusError) as exc:
                 if isinstance(exc, groq.APIStatusError) and "rate_limit" not in str(exc).lower():
                     raise
-                time.sleep(2 ** attempt)
+                time.sleep(min(2 ** attempt, 30))
         raise RuntimeError("GroqProvider: rate-limited after repeated retries")
 
 

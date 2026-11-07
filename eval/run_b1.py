@@ -52,9 +52,15 @@ def main() -> None:
     for method in methods:
         correct_agent = correct_both = 0
         per_run = []
+        errors = 0
         for i, run in enumerate(runs, 1):
             print(f"  [{method}] {i}/{len(runs)} {run.run_id}", end="\r")
-            pred = run_b1(run, provider, method)
+            try:
+                pred = run_b1(run, provider, method)
+            except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
+                errors += 1
+                per_run.append({"run_id": run.run_id, "error": str(exc)})
+                continue
             agent_ok = run.ground_truth is not None and pred.agent == run.ground_truth.responsible_agent
             both_ok = agent_ok and run.ground_truth is not None and pred.step == run.ground_truth.decisive_step
             correct_agent += int(agent_ok)
@@ -70,6 +76,8 @@ def main() -> None:
                 }
             )
         n = len(runs) or 1
+        if errors:
+            print(f"\n[{method}] {errors} run(s) errored out and were excluded from accuracy")
         agent_acc, step_acc = correct_agent / n, correct_both / n
         print(f"\n[{method}] agent-level accuracy: {agent_acc:.2%} | step-level accuracy: {step_acc:.2%}")
         summary[method] = {"agent_accuracy": agent_acc, "step_accuracy": step_acc, "runs": per_run}
