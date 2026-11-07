@@ -30,3 +30,27 @@ Dated entries, append-only. Each entry: what failed/was missing, what changed, m
   runs on the shared Groq account to avoid doubling rate-limit contention). CTRL-04/05/06/08/09/10/12
   remain declared-but-unimplemented — out of scope for this pass given the timeline; the Policy
   Checker already skips them rather than silently passing them.
+
+## 2026-11-07 — Armish — Diagnosed a 30-minute "hang", ran real E3
+
+- **Observed:** `eval/run_system.py` on 20 real Who&When logs appeared to hang for 30+ minutes
+  with no progress. Isolated it step by step (loading, retrieval, then the auditor's single LLM
+  call) and found the LLM call itself was the bottleneck.
+- **Change:** A direct API call surfaced the real cause: `openai/gpt-oss-20b` had hit its Groq
+  free-tier **daily** token quota (198,165/200,000 used) from the earlier full-184-log B0/B1
+  testing. Our retry loop (10 attempts, up to 30s backoff) was retrying a limit that can't clear
+  within any backoff window, burning ~3-5 minutes per call for nothing. Confirmed quotas are
+  per-model (other models on the same key still had headroom), switched the default model to
+  `qwen/qwen3.8-27b`, and made the provider recognize a "tokens per day" error and fail
+  immediately instead of retrying. Also added an explicit 30s client timeout as a safety net.
+- **Effect:** E3 on 20 real logs (Hand-Crafted + Algorithm-Generated) completed in ~15 minutes:
+  **40% agent-level accuracy, 20% step-level, but only 5% verified rate.** Spot-checking
+  individual runs shows this isn't a bug: the Verifier sometimes rejects a claim that later
+  matches ground truth (e.g. run `e6bc9808...`: `agent_correct=true`, `verified=false`) — it is
+  simply stricter than it needs to be on single-citation claims. This is real signal for the
+  paper's failure analysis (Verifier calibration is a concrete, honest limitation) rather than
+  something to hide. `provider_stats` shows avg latency 16.6s/call on this model — slower than
+  gpt-oss-20b was, a real cost/accuracy trade-off worth noting in the efficiency (E6) writeup.
+- **Still open:** E5 ablation (`--no-verifier`) queued next on the same 20 logs for a
+  like-for-like comparison. Full-184-log E1/E2/E3 runs deferred until later (per team decision,
+  prioritizing getting the Phase 2 pipeline built first within the 24h window).
