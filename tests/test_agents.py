@@ -8,7 +8,7 @@ from agentledger.agents.policy_checker import run_policy_checks
 from agentledger.agents.retriever import retrieve_candidates
 from agentledger.ingestion import load_whowhen_log
 from agentledger.ledger import IntegrityLedger
-from agentledger.orchestrator import run_system
+from agentledger.orchestrator import run_system, run_system_with_trace
 from agentledger.providers import MockProvider
 
 SAMPLE_DIR = Path(__file__).resolve().parent.parent / "data" / "sample_logs"
@@ -88,3 +88,16 @@ def test_orchestrator_flags_broken_ledger_as_unverified():
     ledger.entries[0].payload["agent"] = "tampered"
     findings = run_system(run, MockProvider(), ledger, use_verifier=False, use_policy_checker=False)
     assert findings[0].verified is False
+
+
+def test_run_system_with_trace_matches_run_system_and_logs_every_stage():
+    run = load_whowhen_log(SAMPLE_DIR / "run_001.json")
+    ledger = _build_ledger(run)
+    findings, trajectory = run_system_with_trace(run, MockProvider(), ledger, use_verifier=True, use_policy_checker=True)
+    plain_findings = run_system(run, MockProvider(), ledger, use_verifier=True, use_policy_checker=True)
+    assert [f.agent for f in findings] == [f.agent for f in plain_findings]
+    stages = [step["stage"] for step in trajectory]
+    assert "ledger_check" in stages
+    assert "retrieve" in stages
+    assert "auditor_propose" in stages
+    assert stages.count("policy_check") >= 5  # the 5 implemented predicates

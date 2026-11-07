@@ -1,0 +1,67 @@
+{
+  "run_id": "cf106601-ab4f-4af9-b045-5295fe67b37d",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-0",
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-3",
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-4",
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-5",
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-6"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"<name>\", \"step\": 6, \"cited_record_ids\": [\"cf106601-ab4f-4af9-b045-5295fe67b37d-4\", \"cf106601-ab4f-4af9-b045-5295fe67b37d-5\"], \"rationale\": \"The given data confirms the answer is CHN according to the verification experts' agreement. Since it's aligned with the task requirements and experts' review, the task can be considered finalized.\", \"term\": \"TERMINATE\"} ",
+      "agent": "<name>",
+      "step": 6,
+      "cited_record_ids": [
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-4",
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-5"
+      ],
+      "rationale": "The given data confirms the answer is CHN according to the verification experts' agreement. Since it's aligned with the task requirements and experts' review, the task can be considered finalized."
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "Yes ",
+      "verified": true,
+      "reason": "cited records support the claim"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=7 events=7 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": true,
+      "evidence": "no error step detected; vacuously satisfied"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

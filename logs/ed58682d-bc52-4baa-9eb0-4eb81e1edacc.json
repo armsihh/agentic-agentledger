@@ -1,0 +1,79 @@
+{
+  "run_id": "ed58682d-bc52-4baa-9eb0-4eb81e1edacc",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-0",
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-1",
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-16",
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-17",
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-18",
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-19"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"<name>\", \"step\": 17, \"cited_record_ids\": [\"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-16\", \"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-18\", \"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-19\"]\n\"rationale\": \"The final output message provided to the user is: 'The last word before the second chorus of Michael Jackson's song 'Human Nature': bite.\",\n\"agent\": \"<name>\"\n\nExplanation: Agent <name> fulfilled the task by executing steps 16, 18, and 19 correctly, which satisfied the request with the answer 'bite' at step 17.\" ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"Assistant\", \"step\": 16, \"cited_record_ids\": [\"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-18\", \"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-19\"] rationale: The agent failed to understand the task and did not refer to the correct information sources in his answer.\n\n{\"agent\": \"Assistant\", \"step\": 16, \"cited_record_ids\": [\"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-18\", \"ed58682d-bc52-4baa-9eb0-4eb81e1edacc-19\", \"unknown\"] rationale: As the provided records do not mention the song title or lyrics in detail, the provided information is insufficient to answer the task accurately. ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=20 events=20 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": true,
+      "evidence": "error_steps=[1] corrective_action_found_after=True"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

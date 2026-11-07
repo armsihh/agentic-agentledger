@@ -1,0 +1,78 @@
+{
+  "run_id": "e142056d-56ab-4352-b091-b56054bd1359",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "e142056d-56ab-4352-b091-b56054bd1359-0",
+        "e142056d-56ab-4352-b091-b56054bd1359-1",
+        "e142056d-56ab-4352-b091-b56054bd1359-2",
+        "e142056d-56ab-4352-b091-b56054bd1359-3",
+        "e142056d-56ab-4352-b091-b56054bd1359-4"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"GameTheory_Expert\", \"step\": 4, \"cited_record_ids\": [\"e142056d-56ab-4352-b091-b56054bd1359-3\", \"cited_record_ids\": [\"e142056d-56ab-4352-b091-b56054bd1359-4\"], \"agent\": \"GameTheory_Expert\", \"step\": 4, \"cited_record_ids\": [\"e142056d-56ab-4352-b091-b56054bd1359-4\", \"agent\": \"VerificationExpert\", \"step\": 4, \"cited_record_ids\": [\"e142056d-56ab-4352-b091-b56054bd1359-4\"], \"agent\": \"VerificationExpert\", \"step\": 4, \"cited_record_ids\": [\"e142056d-56ab-4352-b091-b56054bd1359-4\"] step=4 TaskContributor: I examined all possible value combinations and no guarantees that Bob is bound by the problem constraints will result in the minimum value for Bob, which is $30,000,000, and 000,000] step=3 Computer_Expert:\\nStep 3: I found these steps:\\n1. Analyze the constraints:\\n2. Determine the optimal strategy:\\n3. Calculate the minimal guaranteed payout:[<empty>1359-54bd1359-4 step=1 TaskManager: The mentioned steps seem fine to me\\nI\\n2. Final Analysis: Given our solution: determine the minimal guaranteed reward: Bob must make a choice in step 1 to analyze constraints, determine optimal strategy, calculate minimal guaranteed payout (e142056bd1359-4, e142056ac004bd1359",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"RBSE1\", \"step\": 5, \"cited_record_ids\": [\"c56054bd1359-4\", \"rationale\": \"Please review the strategy design provided in steps 3 and 4, re-cite records e142056d-56ab-4352-b091-b56054bd1359-3\", \"rationale\": unknown} ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=5 events=5 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": true,
+      "evidence": "no error step detected; vacuously satisfied"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

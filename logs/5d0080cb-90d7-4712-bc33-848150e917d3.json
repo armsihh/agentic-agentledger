@@ -1,0 +1,78 @@
+{
+  "run_id": "5d0080cb-90d7-4712-bc33-848150e917d3",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "5d0080cb-90d7-4712-bc33-848150e917d3-0",
+        "5d0080cb-90d7-4712-bc33-848150e917d3-6",
+        "5d0080cb-90d7-4712-bc33-848150e917d3-7",
+        "5d0080cb-90d7-4712-bc33-848150e917d3-8",
+        "5d0080cb-90d7-4712-bc33-848150e917d3-9"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"Computer_terminal\", \"step\": 9, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-8](py) extracting contents from the PDF file...\n\n{\"agent\": \"Computer_terminal\", \"step\": 8, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-8](py) Creating PDF file with 2nd 3rd 4th page of the PDF document...\n\n{\"agent\": \"N/A\", \"step\": 2, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-7](py) Install the library and run the Python script...\n{\"agent\": \"Computer_terminal\", \"step\": 7, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-8](py) (in) extracting text from PDF\n{\"agent\": \"Computer_terminal\", \"step\": 8, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-9](py) extracting PDF page contents...\n\n{\"agent\": \"N/A\", \"step\": 9, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-848150e917d3-10](py) Proceed with the Python script execution\n{\"agent\": \"Computer_terminal\", \"step\": 10, \"cited_record_ids\": [\"5d0080cb-90d7-4712-bc33-84815",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"Computer_terminal\", \"step\": 9, \"cited_record_ids\": [\"b6877967-c598-4c13-a060-e3fd79c6293c-0\",], \"rationale\": \"agent Computer_terminal did not install the necessary library and thus, Python script is unable to execute, leading to failure of extracting text from the PDF file\"} ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=10 events=10 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": false,
+      "evidence": "error_steps=[7, 8] corrective_action_found_after=False"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

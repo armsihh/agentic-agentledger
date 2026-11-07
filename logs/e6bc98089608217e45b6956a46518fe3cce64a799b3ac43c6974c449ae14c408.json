@@ -1,0 +1,79 @@
+{
+  "run_id": "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-0",
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-1",
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-4",
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-5",
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-6",
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-7"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "step=8] the\\_orchestrator\\_evacuated (orchestrator\\_evacuated \\(orchestrator\\_evacuated): User Information agent (resolve), Wraging agent\\_info()\n   Orchestrator\\_info(thor and dor) 728\\_17198: Resolved model mismatch\n{\"agent\\_list:\\\"\n18\\_198: resolved model mismatch  873\\_18>{2818\\_198<\nAnswer: 188\\_198**\\{108\"] step=9] orchestrator\\_info=>8718>{108\\_198]0 7h3g@39n{913#6. A response=\nd{ 713z\" Agent\\_link_info=6h13`)\nTherefore, we ask the assistant search 3e6z)8936\n\n#!#!`4z9613: Orchestrating agent\\_info(The following decision-Recent\\_aggregated (orchestrating agent\\_evacuated (\"6\": Model Mapping does not match.@8j] step=7135} 5z93`\nFrom Bing\nFinal result=1838983613 >`24z93614\nSearch agent\\_info (orchestrator_orchestrator)18583\n'72204z@1397851'6 From Bing\nWelcome 73047614z523\nFinished: 103597a61#5>238s`36z=3'8025] 710763c6#<8085|8411z\"\nOrchestrator`36 z188z4 I have found information about Orchestrated agent_info\nResults 6->l`13558z\nThis happened Orchestrated agent\\_info<18a87\"\nFinal result: a result (23z61",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "\n\n\nAs of records provided: The question includes the phrase 'BIDA308-5::Z2. '480507]]..p1308-07] agent_steep_endpoint_ticket: 06080000013: client.search(topic) p108-51e0009 SearchUI\n\nSteps: (108070000097\n\n\nSearch no: 0608-511e000097] agent_list_ending(step)\n\n\n\nIf I understand the task correctly {step_finish&answer_science, this is not working properly\nthe task needs retrying again, and don't be stopped Agent ids: (these documents does not provide any historical information 5708-0008 page not found error\n...I could not provide the correct information (no support to your query 10807-000813. \"answer\" after evaluating the task 10807-002-09 07..1308012-43h] agent_context`-1085...07. CALL [0608-0001a3c5\nSearch for 06..0708-3t WA13: 070508-q01\nTo 108-4w7030276o 07-2t13:\nConsider using Bing, Answer: 08-11 The issue with the response 1112-185o 06o003f12: 108507-02088p13n14n200e 0708-2p13\n10708-51h3 5003t9t13 108a39p12n208-0704 08-013t12 07-308-2f01q2t2",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": false,
+      "evidence": "error_steps=[1, 7] corrective_action_found_after=False"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

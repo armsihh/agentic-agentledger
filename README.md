@@ -80,9 +80,9 @@ Summary (20-log real Who&When subset; **not yet the full 184-log benchmark**
   `eval/make_injected_violations.py`) — 30 synthetic cases (10 each for
   CTRL-03/07/11, clean + violating) with planted ground truth.
 - **Reviewer-facing output**: **pending (Areej)**.
-- **Test suite** (`tests/`) — 33 tests: ingestion, ledger, baselines, all 5
+- **Test suite** (`tests/`) — 34 tests: ingestion, ledger, baselines, all 5
   implemented controls, and the full Gap 1 agent pipeline (retriever,
-  auditor, verifier, orchestrator, ablation flags).
+  auditor, verifier, orchestrator, ablation flags, trajectory logging).
 
 ## Reference repo (base paper's code — kept separate)
 
@@ -103,6 +103,12 @@ git clone https://github.com/ag2ai/Agents_Failure_Attribution.git ../reference-A
 ```
 
 It has the real Who&When benchmark at `../reference-Agents_Failure_Attribution/Who&When/{Hand-Crafted,Algorithm-Generated}/`.
+
+## Application interface
+
+Every experiment (E1–E6) is run through an argparse CLI in `eval/*.py` (each takes `--help`).
+This is the "reproducible execution workflow" option the brief allows as an alternative to a
+GUI/web app — see "Running it" below for the exact commands.
 
 ## Setup
 
@@ -126,6 +132,13 @@ With no key set, everything runs against the deterministic, offline
 real accuracy.
 
 ## Running it
+
+> **Note on repo layout vs. the Phase 2 brief's suggested structure:** the brief suggests an
+> `experiments/` folder for E1–E6 configs/scripts; this repo keeps that in `eval/` instead, since
+> that's where Phase 1's baseline workflows already lived and every E1–E6 script below is just an
+> extension of the same pattern. Functionally equivalent — scripts here, results in `results/`,
+> same as the brief asks for. Agent traces/observability output lives in `logs/` as suggested
+> (see `eval/run_system.py --trajectory-dir`, default `logs`).
 
 ```bash
 # test suite
@@ -198,7 +211,10 @@ eval/
   make_injected_violations.py   generates the Gap 3 suite
   run_policy_eval.py            E4 workflow for Gap 3
 results/                       all experiment outputs + write-ups (see above)
-tests/                         pytest suite (33 tests)
+logs/                          per-run agent trajectories (reasoning steps, tool calls,
+                                revisions, policy checks) for reported E3/E5 runs -- see
+                                `eval/run_system.py --trajectory-dir`
+tests/                         pytest suite (34 tests)
 docs/
   phase2_plan.md                branch strategy, file ownership, interface contract
   AREEJ_TASKS.md                 Areej's task list

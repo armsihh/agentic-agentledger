@@ -1,0 +1,79 @@
+{
+  "run_id": "df6561b2-7ee5-4540-baab-5095f742716a",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "df6561b2-7ee5-4540-baab-5095f742716a-0",
+        "df6561b2-7ee5-4540-baab-5095f742716a-3",
+        "df6561b2-7ee5-4540-baab-5095f742716a-4",
+        "df6561b2-7ee5-4540-baab-5095f742716a-5",
+        "df6561b2-7ee5-4540-baab-5095f742716a-6",
+        "df6561b2-7ee5-4540-baab-5095f742716a-7"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"Python_Expert\", \"step\": 8, \"cited_record_ids\": [\"df6561b2-7ee5-4540-baab-5095f742716a-7] step=8 Python_Expert: Given the calculated values of variance and standard deviation for red and green numbers, proceed to compute the average of these values (red numbers \\(\\bar{x}\\) and the result.\n```python\nresult = round((variance / 2) . 2\n```)\n\n```python\naverage = round((variance / 2)\n```\n```python\n{\\\"failed reasoning\": False}\n```\n```python\nstep=9 Python_Expert: exitvalidation: Exit from the workflow\n``` ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"Python_Expert\", \"step\": 0, \"cited_record_ids\": [\"df6561b2-7ee5-4540-baab-5095f742716a-0-d0\", \"reason\": \"The task cannot be considered solved as the image has not been processed and its statistics calculated.\", \"reason_rationale\": \"The standard deviations could not be computed, as the quantities were not determined by analyzing the image.\", \"rationale\": \"The relevant data is missing (no image path)\", \"step\": 3, \"agent\": \"Python_Expert\", \"rationale\": \"No image statistics available/could not find the numbers in the image\"} \n   ",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": true,
+      "evidence": "error_steps=[0, 3] corrective_action_found_after=True"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}
