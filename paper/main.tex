@@ -154,14 +154,18 @@ rejection) rather than a single prompt.]]
 (\texttt{src/agentledger/ledger.py}) and your provenance-graph extension.]]
 
 \subsection{Gap 3: Control Catalogue and Policy Checker}
-[[WRITE THIS: describe the control catalogue (12 controls declared, 5
+[[WRITE THIS: describe the control catalogue (12 controls declared, 6
 implemented: CTRL-01 complete ledgered record-keeping, CTRL-02 tool calls
-logged, CTRL-03 human oversight before high-risk tool calls, CTRL-07
-corrective action after an error step, CTRL-11 no sensitive data in tool
-arguments -- \texttt{src/agentledger/controls.py}) and the Policy Checker
-that runs them over a ledgered trajectory (\texttt{agents/policy\_checker.py}).
-Be explicit that 7 controls remain declared-but-unimplemented and are
-skipped, not silently passed.]]
+logged, CTRL-03 human oversight before high-risk tool calls, CTRL-06
+per-action outcomes measured, CTRL-07 corrective action after an error
+step, CTRL-11 no sensitive data in tool arguments --
+\texttt{src/agentledger/controls.py}) and the Policy Checker that runs
+them over a ledgered trajectory (\texttt{agents/policy\_checker.py}).
+Be explicit that 6 controls remain declared-but-unimplemented, each with
+a stated reason in code (mostly that the required evidence is an
+org-level artifact -- a risk treatment plan, an authorization matrix --
+that a single run's log structurally cannot contain), and are skipped,
+not silently passed.]]
 
 % ============================================================
 \section{Experimental Setup}
@@ -174,8 +178,8 @@ first-by-file-order -- not hand-picked) [[WRITE THIS: state plainly that the
 full 184-log benchmark was not run due to the free-tier evaluation
 timeline, and that this is a directional, not final, result -- honesty here
 is explicitly rewarded by the grading rubric]]. The Gap 3 injected-violation
-suite (\texttt{data/injected\_violations/}, 30 synthetic cases, 10 each for
-CTRL-03/07/11) provides planted ground truth where Who\&When has none.
+suite (\texttt{data/injected\_violations/}, 80 synthetic cases, 20 each for
+CTRL-03/06/07/11) provides planted ground truth where Who\&When has none.
 
 \textbf{Models.} All real-data runs use Groq's free-tier API. Because each
 model is capped at roughly 200{,}000 tokens/day on the free tier,
@@ -234,7 +238,7 @@ Gap & Metric & Base paper (E2) & Ours (E3) \\
 1 & Step acc. & 25.0\% & 20.0\% \\
 1 & Unsupported-claim rate & n/a & \textbf{0.0\%} \\
 2 & Tamper detection & --- & [[Areej]] \\
-3 & Control F1 (5 predicates) & n/a & 1.00 \\
+3 & Control F1 (4 of 6 implemented predicates) & n/a & 1.00 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -262,9 +266,17 @@ is roughly on par with the reproduced base-paper method at this sample
 size -- the real result is the unsupported-claim rate. For Gap 3, state
 the F1=1.00 result and its caveat (deterministic rules scored on the
 patterns they were built to detect -- see
-\texttt{results/e5\_ablation\_gap3.md}). Pull 2-3 concrete numbers from
-\texttt{results/failure\_analysis\_gap1.md} to illustrate. [[Areej: add
-Gap 2's row and paragraph once your tamper-test results land.]]]]
+\texttt{results/e5\_ablation\_gap3.md}), then immediately follow it with
+the real-data check that caveat demands: CTRL-03/CTRL-11 have zero real
+trigger occurrences across all 184 real logs (no real data exists to
+validate them against at all), and CTRL-07, hand-validated against a
+16-case real sample, scores 78\% precision / 100\% recall after fixing
+two real bugs the validation itself found -- a weaker, far more
+defensible number than the synthetic 1.00 (full story, including what was
+broken and fixed: \texttt{results/gap3\_real\_violation\_validation.md}).
+Pull 2-3 concrete numbers from \texttt{results/failure\_analysis\_gap1.md}
+to illustrate. [[Areej: add Gap 2's row and paragraph once your
+tamper-test results land.]]]]
 
 % ============================================================
 \section{Ablation \& Comparative Analysis}
@@ -306,9 +318,14 @@ in your own words, don't just list):
     results aren't attributable to one fixed model.
   \item The Verifier's precision/recall trade-off is untuned -- its
     acceptance bar may be stricter than necessary (see Failure Analysis).
-  \item Gap 3's F1=1.00 is on deterministic rules scored against the exact
-    patterns they detect, not validated against real or human-labelled
-    violations (a limitation Phase 1's own supervisor feedback flagged).
+  \item Gap 3's synthetic F1=1.00 doesn't describe real-world performance --
+    CTRL-03/CTRL-11 have zero real trigger occurrences in this benchmark to
+    validate against at all, and CTRL-07's real-data precision/recall
+    (78\%/100\%, n=9 hand-labeled) is based on a small, hand-labeled sample,
+    not a robust estimate (\texttt{results/gap3\_real\_violation\_validation.md}).
+    One residual false-positive mode found there (a single long message
+    containing both an error word and an unrelated "correctly") needs
+    semantic judgment, not another keyword, to fix properly.
   \item [[Areej: your Gap 2 threats -- e.g. synthetic vs. real tamper
     patterns, provenance graph completeness.]]
 \end{itemize}

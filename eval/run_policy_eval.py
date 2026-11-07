@@ -16,7 +16,7 @@ from agentledger.agents.policy_checker import run_policy_checks
 from agentledger.ingestion import load_whowhen_log
 from agentledger.ledger import IntegrityLedger
 
-_SCORED_CONTROLS = ["CTRL-03", "CTRL-07", "CTRL-11"]
+_SCORED_CONTROLS = ["CTRL-03", "CTRL-06", "CTRL-07", "CTRL-11"]
 
 
 def _build_ledger(run) -> IntegrityLedger:

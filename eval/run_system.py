@@ -80,7 +80,13 @@ def main() -> None:
         gap1 = findings[0]
 
         if trajectory_dir:
-            safe_name = run.run_id.replace("/", "_")
+            # index-prefixed: the real Who&When release has ~45 question_IDs (= our run_id)
+            # that collide across the Hand-Crafted/Algorithm-Generated split (e.g. both
+            # Algorithm-Generated/125.json and Hand-Crafted/1.json carry the same question_ID),
+            # so run_id alone isn't a safe filename at full-184 scale -- it would silently
+            # overwrite ~45 trajectory files pairwise. Scoring itself is unaffected (ground
+            # truth is compared per run object, never looked up by run_id), only this filename.
+            safe_name = f"{i:03d}_{run.run_id.replace('/', '_')}"
             (trajectory_dir / f"{safe_name}.json").write_text(
                 json.dumps({"run_id": run.run_id, "trajectory": trajectory}, indent=2), encoding="utf-8"
             )

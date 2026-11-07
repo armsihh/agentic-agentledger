@@ -69,3 +69,129 @@ Dated entries, append-only. Each entry: what failed/was missing, what changed, m
 - **Effect:** this is a clean, honest Gap 1 result for the paper's Results/Ablation sections — the
   core claim ("requiring cited records + a Verifier reduces unsupported claims") holds up on real
   data, with the expected precision/recall trade-off as the limitation to discuss.
+
+## 2026-11-07 — Armish — deadline extended to 11-10; picking up deferred work
+
+- **Context:** supervisor extended the Phase 2 deadline from 11-08 to 11-10. Everything previously
+  deferred for time is back in scope: a best-effort full-184-log run (not just n=20) for E1/E2/E3,
+  Verifier recalibration, more Gap 3 control predicates, and validating Gap 3 against real (not
+  just injected) violations. Also adding OpenRouter as a second free-tier provider so an overnight
+  batch can survive Groq's daily quota running out.
+- **Added `OpenRouterProvider` + `FallbackProvider`** (`src/agentledger/providers.py`): OpenRouter
+  is OpenAI-compatible, called via stdlib `urllib` (no new dependency); its free-model list is
+  discovered live from `/models` (pricing.prompt == 0) rather than hardcoded, since free slugs
+  rotate over time. `FallbackProvider` wraps a list of providers end-to-end — when Groq's own
+  5-model chain raises (fully exhausted), it advances to OpenRouter and retries immediately.
+  `get_default_provider()` now returns this wrapper automatically when both `GROQ_API_KEY` and
+  `OPENROUTER_API_KEY` are set. Not validated against a live OpenRouter key yet — the HTTP/retry
+  logic mirrors `GroqProvider`'s (which *was* validated at length against real traffic), and the
+  cross-provider switch itself is unit-tested with fake providers (`tests/test_providers.py`,
+  no network). 38/38 tests passing.
+- **Recalibrated the Verifier's prompt** (`src/agentledger/agents/verifier.py`): the n=20 failure
+  analysis found the Verifier is high-precision/low-recall — all 4 fully-correct predictions in
+  that sample were still rejected. Changed the prompt from "do the cited records actually support
+  this claim?" to "are the cited records relevant and consistent with this claim" (accepting one
+  clearly-relevant citation instead of demanding full corroboration), per that file's own stated
+  fix. **Not yet re-measured against live data** — needs a real run to compare verified_rate /
+  unsupported_claim_rate against the pre-change numbers in `results/gap1_ablation_summary.json`.
+- **Still open:** full-184-log best-effort run (queued for overnight via
+  `scripts/run_overnight_full.ps1` + a Windows Scheduled Task, so it survives this session
+  restarting); re-measuring the Verifier change; more Gap 3 predicates; Gap 3 validation against
+  real violations. Waiting on `GROQ_API_KEY`/`OPENROUTER_API_KEY` to actually run anything live.
+
+## 2026-11-07 (late) — Armish — keys added, overnight task scheduled, one real OpenRouter bug caught
+
+- **Keys set** in `.env` (gitignored): `GROQ_API_KEY`, `OPENROUTER_API_KEY`. Both smoke-tested with
+  a single minimal call each before relying on them unattended.
+- **Bug found and fixed in `OpenRouterProvider`** (same session, before any real eval traffic):
+  the smoke test hit `HTTP 403` on the first discovered free model
+  (`liquid/lfm-3-1.7b:free`, routed to an upstream backend OpenRouter's error body labelled
+  `"provider_name":"Stealth"`, region-unavailable) and the original code treated *any* non-429
+  HTTP error as fatal — raising immediately instead of switching models, which would have killed
+  the whole overnight run on the very first region-blocked model. Fixed: a 401 (bad key) still
+  raises immediately since no model will work either way, but any other non-429 HTTP error now
+  falls through to the same "switch to next free model" path as retry-exhaustion. Re-tested after
+  the fix: succeeded on the first call. 41/41 tests still passing (this path isn't covered by the
+  offline `FallbackProvider` unit tests, since it needs a real HTTP error from a real model — noted
+  as a real gap, not pretending otherwise).
+- **Scheduled** a one-time Windows Scheduled Task (`AgentLedgerOvernightFull`, registered via
+  PowerShell's `Register-ScheduledTask`, not `schtasks.exe`'s locale-dependent date strings) firing
+  at local midnight (2026-11-08T00:00 — confirmed against `Get-Date`, not the Bash tool's own `date`
+  output, which reported a different, apparently-wrong timezone than the actual Windows clock task
+  scheduler uses). `WakeToRun`, `AllowStartIfOnBatteries`, `DontStopIfGoingOnBatteries`, and a 10h
+  execution limit are all set so an overnight run survives sleep/lock/battery. Ran a static
+  PowerShell parse-check on `scripts/run_overnight_full.ps1` and independently verified its
+  `.env`-parsing block in a fresh process — did not actually execute the real eval scripts tonight,
+  to avoid spending any of the day's free-tier quota before the scheduled run gets it.
+- **Scope for tonight's run, per team decision:** best-effort against the full 184-log real
+  Who&When benchmark for E1 (B0), E2 (B1 `all_at_once`), and E3 (our system) — not capped to a
+  fixed N, since each script already skips a failed run and fails fast once a model/provider is
+  truly exhausted (see `providers.py`'s "tokens per day" / HTTP-429 fast paths), so "run until
+  quota is gone" and "run as many as possible" are the same thing here, not two different asks.
+  E3 uses the recalibrated Verifier prompt by default (nothing to separately configure) — so
+  tonight's `results/system_results_full184.json` will reflect the new prompt at full scale, but
+  is **not** a controlled before/after comparison against the existing n=20 numbers in
+  `results/gap1_ablation_summary.json` (that run differs in both sample size and prompt at once).
+  A clean, isolated recalibration ablation (same 20 logs, prompt-only difference) is deferred to
+  after tonight's run finishes, to avoid competing with it for quota.
+- **Still open:** the isolated Verifier-recalibration ablation; more Gap 3 predicates (6/12 now;
+  added CTRL-06 earlier tonight); validating Gap 3's predicates against real (non-synthetic)
+  violations.
+
+## 2026-11-07 (late) — Armish — Gap 3 real-data validation: found and fixed two real bugs
+
+- **CTRL-03/CTRL-11 have zero real triggers across all 184 real logs** — not a bug, just a fact
+  about this benchmark (reasoning/search/code tasks, no `delete`/`pay`-style tool calls or
+  password-shaped arguments anywhere in it). These two can only be evaluated on the synthetic
+  injected-violation suite; there is no real data to check them against in Who&When at all.
+- **CTRL-07 triggers on 145/184 real logs.** Hand-labeled a reproducible sample (`seed(42)`,
+  n=16: 8 predicted-pass + 8 predicted-fail) against genuine human judgment, not the predicate's
+  own output. Found, before any fix: real precision 83% (5/6), recall 71% (5/7) — not the
+  synthetic suite's 1.00. Also found a benign `autogen_magentic_one` framework warning
+  (`...Model mapping may be incorrect`) that appears in 58/184 real runs and is the *sole*
+  CTRL-07 trigger on 13/184 of them — pure logging noise, not a real failure.
+- **Fixed** (`src/agentledger/controls.py`): strip that known warning string before error-keyword
+  matching; broadened `_CORRECTIVE_WORDS` to include natural phrasing ("try again", "reformat",
+  "redo"); allowed a same-step self-correction (error + fix in one message), not only a strictly
+  later one. Re-measured: full-184 distribution shifts from (vacuous 39 / pass 38 / fail 107) to
+  (52 / 93 / 39) — the +13 vacuous matches the 13 boilerplate-only-trigger runs exactly. On the
+  same 16-case sample: recall improves to 100% (7/7, both real false negatives now caught) at a
+  precision cost, 78% (7/9) — the same-step allowance also introduced one new false positive
+  (a long planning paragraph that happens to contain "correctly" elsewhere in the same message,
+  about a future step, not a real fix). A genuine trade-off, not a strict win — same shape of
+  finding as Gap 1's own Verifier precision/recall trade-off. Full write-up:
+  `results/gap3_real_violation_validation.md`. Added 3 regression tests
+  (`tests/test_controls.py`) for the specific cases this fix targets. 44/44 tests passing.
+  Sample size (n=16, n=9 genuine non-ambiguous) is small — treated as illustrative, not a robust
+  estimate, same honesty standard as the rest of this project's n=20 numbers.
+- **Also fixed in passing:** `eval/run_system.py`'s trajectory filenames were keyed on `run_id`
+  alone, but the real Who&When release has 45 `question_ID` collisions across the
+  Hand-Crafted/Algorithm-Generated split (confirmed: `Algorithm-Generated/125.json` and
+  `Hand-Crafted/1.json` share one) — at full-184 scale this would have silently overwritten ~45
+  trajectory files pairwise in tonight's `logs_full184/`. Scoring itself was never affected
+  (ground truth is compared per run object, never looked up by run_id) and the existing n=20
+  subset has zero collisions, so none of the headline results or existing `logs/` files needed
+  fixing — only this filename, now index-prefixed. Caught before tonight's overnight run, not
+  after.
+- **Remaining:** the isolated Verifier-recalibration ablation (same 20 logs, prompt-only
+  before/after) — deferred to after tonight's overnight run so it doesn't compete for quota.
+
+## 2026-11-07 (late) — Armish — extended the injected-violation suite to CTRL-06; fixed a real count bug
+
+- **Extended Gap 3's injected-violation suite** (`eval/make_injected_violations.py`) with 10
+  violate + 10 clean CTRL-06 cases (a tool call with no recorded `result` vs. one with a result
+  set), and added CTRL-06 to `eval/run_policy_eval.py`'s `_SCORED_CONTROLS`. Re-ran: all 4 scored
+  controls (CTRL-03/06/07/11) still score precision=recall=F1=1.00 on their own 20 cases each
+  (same honest caveat as before — deterministic rules scored on their own design pattern). The
+  other 3 controls' existing cases all correctly contribute true negatives for CTRL-06 (their
+  tool calls already had `result` set), confirming the extension didn't disturb anything.
+- **Also fixed a real, pre-existing documentation bug while re-counting:** every write-up
+  (README, `main.tex`, `results/e5_ablation_gap3.md`) claimed the suite had "30 cases" / "10
+  each" for 3 controls — the actual generator produces 10 *violate* + 10 *clean* per control
+  (20 per control), so the true original total was 60, not 30; confirmed directly from the
+  filesystem (`ls data/injected_violations | wc -l` → 80 now, for 4 controls × 20). Fixed the
+  count everywhere it's stated going forward; left the original 2026-11-07 devlog entry above
+  as-is since this log is append-only and that entry correctly reflects what was believed true
+  at the time it was written.
+- 44/44 tests still passing (this change only touches the synthetic-data generator and the
+  eval script's scored-control list, not any control predicate's code).

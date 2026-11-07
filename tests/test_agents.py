@@ -61,7 +61,7 @@ def test_policy_checker_skips_unimplemented_predicates():
     ledger = _build_ledger(run)
     results = run_policy_checks(run, ledger)
     implemented_ids = {r.control_id for r in results if r.implemented}
-    assert {"CTRL-01", "CTRL-02", "CTRL-03", "CTRL-07", "CTRL-11"} <= implemented_ids
+    assert {"CTRL-01", "CTRL-02", "CTRL-03", "CTRL-06", "CTRL-07", "CTRL-11"} <= implemented_ids
     assert all(r.implemented or r.control_id not in implemented_ids for r in results)
 
 
@@ -71,7 +71,7 @@ def test_orchestrator_run_system_returns_gap1_and_control_findings():
     findings = run_system(run, MockProvider(), ledger, use_verifier=True, use_policy_checker=True)
     assert findings[0].control_id is None  # the Gap-1 attribution finding comes first
     control_findings = [f for f in findings if f.control_id is not None]
-    assert len(control_findings) >= 5  # the five implemented predicates
+    assert len(control_findings) >= 6  # the six implemented predicates
 
 
 def test_orchestrator_ablation_flags_shrink_the_output():
@@ -100,4 +100,4 @@ def test_run_system_with_trace_matches_run_system_and_logs_every_stage():
     assert "ledger_check" in stages
     assert "retrieve" in stages
     assert "auditor_propose" in stages
-    assert stages.count("policy_check") >= 5  # the 5 implemented predicates
+    assert stages.count("policy_check") >= 6  # the 6 implemented predicates

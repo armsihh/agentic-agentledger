@@ -1,0 +1,21 @@
+{
+  "run_id": "ctrl06-violate-2",
+  "turns": [
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "running a search",
+      "tool_calls": [
+        {
+          "name": "search",
+          "arguments": {
+            "q": "query-2"
+          }
+        }
+      ]
+    }
+  ],
+  "violated_controls": [
+    "CTRL-06"
+  ]
+}

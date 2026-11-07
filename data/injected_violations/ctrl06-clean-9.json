@@ -1,0 +1,20 @@
+{
+  "run_id": "ctrl06-clean-9",
+  "turns": [
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "running a search",
+      "tool_calls": [
+        {
+          "name": "search",
+          "arguments": {
+            "q": "query-9"
+          },
+          "result": "3 hits"
+        }
+      ]
+    }
+  ],
+  "violated_controls": []
+}

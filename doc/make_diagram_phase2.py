@@ -89,7 +89,7 @@ box(
         "(30 cases, CTRL-03/07/11)",
         "",
         "Control catalogue:",
-        "5/12 predicates implemented",
+        "6/12 predicates implemented",
     ],
     status="done",
 )
@@ -117,7 +117,7 @@ box(b_ingest, "1. Ingestor", ["Normalise logs to the", "RunLog/Event schema"], s
 box(b_ledger, "2. Integrity Ledger", ["SHA-256 hash chain.", "Provenance links: pending (Areej)"], status="done")
 box(b_auditor, "3. Auditor agent", ["Proposes agent/step,", "cites record ids"], status="done")
 box(b_retriever, "4. Retriever", ["Keyword shortlist,", "not whole-log reading"], status="done")
-box(b_policy, "5. Policy Checker", ["5/12 predicates;", "7 declared, not yet built"], status="done")
+box(b_policy, "5. Policy Checker", ["6/12 predicates;", "6 declared, not yet built"], status="done")
 box(b_verifier, "6. Verifier agent", ["Re-reads cited records,", "rejects + 1 revision"], status="done")
 box(b_report, "7. Audit report", ["JSON results per run;", "reviewer UI: pending (Areej)"], status="pending")
 box(b_reviewer, "8. Human reviewer", ["Approve / reject /", "escalate each finding"], status="pending")
