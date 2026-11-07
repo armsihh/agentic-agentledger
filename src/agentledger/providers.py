@@ -10,9 +10,36 @@ from abc import ABC, abstractmethod
 
 
 class LLMProvider(ABC):
+    """base class. tracks call count / latency / char volume for every subclass (E6:
+    efficiency & reliability) without each provider having to instrument itself."""
+
+    def __init__(self) -> None:
+        self.call_count = 0
+        self.total_latency_seconds = 0.0
+        self.total_chars_in = 0
+        self.total_chars_out = 0
+
     @abstractmethod
-    def generate(self, prompt: str) -> str:
+    def _generate_impl(self, prompt: str) -> str:
         """return the model's raw text completion for a prompt."""
+
+    def generate(self, prompt: str) -> str:
+        start = time.monotonic()
+        text = self._generate_impl(prompt)
+        self.call_count += 1
+        self.total_latency_seconds += time.monotonic() - start
+        self.total_chars_in += len(prompt)
+        self.total_chars_out += len(text)
+        return text
+
+    def stats(self) -> dict:
+        return {
+            "call_count": self.call_count,
+            "total_latency_seconds": round(self.total_latency_seconds, 3),
+            "avg_latency_seconds": round(self.total_latency_seconds / self.call_count, 3) if self.call_count else 0.0,
+            "total_chars_in": self.total_chars_in,
+            "total_chars_out": self.total_chars_out,
+        }
 
 
 class MockProvider(LLMProvider):
@@ -35,7 +62,7 @@ class MockProvider(LLMProvider):
                 culprit = (step, agent)
         return culprit
 
-    def generate(self, prompt: str) -> str:
+    def _generate_impl(self, prompt: str) -> str:
         if "'Yes' or 'No'" in prompt:
             turns = self._turns(prompt)
             last_content = turns[-1][2] if turns else ""
@@ -62,6 +89,7 @@ class AnthropicProvider(LLMProvider):
     """hosted provider. requires ANTHROPIC_API_KEY and the optional anthropic package."""
 
     def __init__(self, model: str = "claude-sonnet-5-5") -> None:
+        super().__init__()
         try:
             import anthropic
         except ImportError as exc:
@@ -74,10 +102,10 @@ class AnthropicProvider(LLMProvider):
         self._client = anthropic.Anthropic(api_key=api_key)
         self._model = model
 
-    def generate(self, prompt: str) -> str:
+    def _generate_impl(self, prompt: str) -> str:
         response = self._client.messages.create(
             model=self._model,
-            max_tokens=256,
+            max_tokens=500,
             messages=[{"role": "user", "content": prompt}],
         )
         return response.content[0].text
@@ -86,7 +114,11 @@ class AnthropicProvider(LLMProvider):
 class GroqProvider(LLMProvider):
     """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package."""
 
+    _MIN_GAP_SECONDS = 3.0  # paces calls so a long batch doesn't burst past the free-tier TPM cap
+    _last_call_at: float = 0.0
+
     def __init__(self, model: str = "openai/gpt-oss-20b") -> None:
+        super().__init__()
         try:
             import groq
         except ImportError as exc:
@@ -99,22 +131,27 @@ class GroqProvider(LLMProvider):
         self._client = groq.Groq(api_key=api_key)
         self._model = model
 
-    def generate(self, prompt: str) -> str:
-        """calls the free-tier API with backoff on rate limits, since eval runs make many calls."""
+    def _generate_impl(self, prompt: str) -> str:
+        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls."""
         import groq
 
-        for attempt in range(6):
+        wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
+        if wait > 0:
+            time.sleep(wait)
+
+        for attempt in range(10):
             try:
                 response = self._client.chat.completions.create(
                     model=self._model,
-                    max_tokens=256,
+                    max_tokens=500,
                     messages=[{"role": "user", "content": prompt}],
                 )
+                GroqProvider._last_call_at = time.monotonic()
                 return response.choices[0].message.content
             except (groq.RateLimitError, groq.APIStatusError) as exc:
                 if isinstance(exc, groq.APIStatusError) and "rate_limit" not in str(exc).lower():
                     raise
-                time.sleep(2 ** attempt)
+                time.sleep(min(2 ** attempt, 30))
         raise RuntimeError("GroqProvider: rate-limited after repeated retries")
 
 
