@@ -117,7 +117,7 @@ class GroqProvider(LLMProvider):
     _MIN_GAP_SECONDS = 3.0  # paces calls so a long batch doesn't burst past the free-tier TPM cap
     _last_call_at: float = 0.0
 
-    def __init__(self, model: str = "openai/gpt-oss-20b") -> None:
+    def __init__(self, model: str = "qwen/qwen3.8-27b") -> None:
         super().__init__()
         try:
             import groq
@@ -128,11 +128,15 @@ class GroqProvider(LLMProvider):
         api_key = os.environ.get("GROQ_API_KEY")
         if not api_key:
             raise RuntimeError("set GROQ_API_KEY to use GroqProvider")
-        self._client = groq.Groq(api_key=api_key)
+        self._client = groq.Groq(api_key=api_key, timeout=30.0)
         self._model = model
 
     def _generate_impl(self, prompt: str) -> str:
-        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls."""
+        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls.
+
+        a daily-token-quota error (TPD) won't clear within any reasonable backoff window, so it
+        fails fast instead of burning ~3-5 minutes of retries per call before giving up anyway.
+        """
         import groq
 
         wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
@@ -149,8 +153,14 @@ class GroqProvider(LLMProvider):
                 GroqProvider._last_call_at = time.monotonic()
                 return response.choices[0].message.content
             except (groq.RateLimitError, groq.APIStatusError) as exc:
-                if isinstance(exc, groq.APIStatusError) and "rate_limit" not in str(exc).lower():
+                message = str(exc).lower()
+                if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
                     raise
+                if "tokens per day" in message or " tpd" in message:
+                    raise RuntimeError(
+                        f"GroqProvider: daily token quota exhausted for model '{self._model}' - "
+                        f"switch models (quotas are per-model) or wait for it to reset: {exc}"
+                    ) from exc
                 time.sleep(min(2 ** attempt, 30))
         raise RuntimeError("GroqProvider: rate-limited after repeated retries")
 
