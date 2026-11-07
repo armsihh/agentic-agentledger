@@ -1,56 +1,90 @@
 # AgentLedger
 
-Evidence-bound, tamper-evident, control-mapped auditing of agent logs. Phase 1
-technical foundation for the AI4015 project **G1-04**: *From Agent Logs to
-Audit Evidence: Compliance-Grade Traceability for Agentic AI*.
+Evidence-bound, tamper-evident, control-mapped auditing of agent logs. AI4015
+project **G1-04**: *From Agent Logs to Audit Evidence: Compliance-Grade
+Traceability for Agentic AI*.
+
+> **Status:** Phase 2, in progress (crunch mode, deadline 2026-11-08). This
+> README is a working draft — Gap 2 (provenance graph, tamper-detection
+> harness, reviewer UI) is Areej's piece and not folded in here yet; see
+> `docs/AREEJ_TASKS.md` and `docs/phase2_plan.md` for the plan. Sections below
+> marked **(pending)** are hers to complete.
 
 See `doc/Agentic Phase 1 (fixed).docx` for the full literature review, research
-gaps, and project proposal this code implements.
+gaps, and project proposal this code implements, and
+`doc/figure2_phase2_status.png` for the current architecture / implementation
+status diagram.
 
-## What's here (Phase 1 scope)
+## Changes since Phase 1
 
-This is the **initial technical foundation**, not the full system described in
-the proposal's B8 architecture. It covers:
+- Added a free-tier `GroqProvider` (`src/agentledger/providers.py`) with
+  automatic model fallback (Groq's free tier caps each model at ~200k
+  tokens/day; the provider falls through a chain of models instead of
+  failing when one is exhausted) — see `docs/devlog.md` for how this was
+  diagnosed and fixed.
+- Built the Gap 1 agentic pipeline: `src/agentledger/agents/{retriever,
+  auditor, verifier}.py`, tied together by `src/agentledger/orchestrator.py`.
+- Extended the Gap 3 control catalogue from 2 to 5 implemented predicates
+  and added a Policy Checker (`src/agentledger/agents/policy_checker.py`)
+  plus a 30-case injected-violation suite (`eval/make_injected_violations.py`,
+  `eval/run_policy_eval.py`).
+- Re-ran B0/B1 baselines on the **real** Who&When benchmark (not just the
+  3-log synthetic sample) for a fair comparison against the new system.
 
-- **Normalised schema** (`src/agentledger/schema.py`) - the `RunLog`/`Event`
+## Gap-resolution table
+
+Full write-up, reproduction commands, and honest caveats in
+[`results/gap_resolution_table_gap1_gap3.md`](results/gap_resolution_table_gap1_gap3.md).
+Summary (20-log real Who&When subset; **not yet the full 184-log benchmark**
+— see `docs/devlog.md`):
+
+| Gap | Method / component | Metric | Base paper (E2) | Ours (E3) | Addressed? |
+|---|---|---|---|---|---|
+| Gap 1 | Auditor + Retriever + Verifier | agent / step accuracy | 40.0% / 25.0% | 40.0% / 20.0% | Partially — accuracy is on par, not a clear win at this sample size |
+| Gap 1 | — same — | **unsupported-claim rate** (the real target metric) | n/a (no citation mechanism exists to compare) | **0.0%** (vs. 56.3% with the Verifier removed — see `results/gap1_ablation_summary.json`) | **Fully** — beats Phase 1's H1 target of <5% |
+| Gap 2 | Integrity Ledger + provenance graph + tamper harness | detection / false-alarm rate | — | *(pending — Areej)* | *(pending)* |
+| Gap 3 | Policy Checker, 5/12 predicates | precision / recall / F1 | n/a | 1.00 / 1.00 / 1.00 on the injected-violation suite (honest caveat: deterministic rules scored on their own design patterns — see `results/e5_ablation_gap3.md`) | **Fully** (for the 5 implemented predicates only) |
+
+## What's here
+
+- **Normalised schema** (`src/agentledger/schema.py`) — the `RunLog`/`Event`
   state/context structure every log format is ingested into.
-- **Ingestion** (`src/agentledger/ingestion.py`) - one format implemented
-  (Who&When-style JSON); TRAIL and MAST-Data follow the same pattern.
-- **Integrity Ledger** (`src/agentledger/ledger.py`) - the SHA-256 hash-chain
-  for Gap 2. Detects tampering, deletion, and re-ordering of past entries.
-- **Control catalogue** (`src/agentledger/controls.py`) - the ~12-control
-  catalogue for Gap 3, mapped to ISO/IEC 42001 clauses and NIST AI RMF
-  functions. Two predicates (CTRL-01, CTRL-02) are fully implemented; the rest
-  are declared with their source/clause and raise `NotImplementedError` until
-  the Policy Checker agent is built in Phase 2.
-- **Tool interfaces** (`src/agentledger/tools.py`) - `read_span`,
-  `search_log`, `get_provenance`, `verify_chain`, `check_control`, called
-  directly here; wiring them up as agent-callable tools for the
-  Auditor/Verifier/Policy Checker agents is Phase 2 work.
-- **Model provider interface** (`src/agentledger/providers.py`) - swappable
-  hosted (Anthropic) vs. local model behind one interface, plus an offline
-  `MockProvider` so the pipeline runs with no API key.
-- **Baseline B0** (`src/agentledger/baselines/b0_single_call.py`) - the
-  weakest baseline from B10: one prompt, the whole log, a bare verdict.
-  Written from scratch; not derived from any other repo.
-- **Baseline B1** (`src/agentledger/baselines/b1_whowhen_reference.py`) - the
-  base paper's own three attribution methods (`all_at_once`, `step_by_step`,
-  `binary_search`), re-implemented against our schema and provider interface.
-  See "Reference repo" below for exactly what was reused and how.
-- **Two end-to-end workflows** (`eval/run_baseline.py` for B0, `eval/run_b1.py`
-  for B1) - ingest -> ledger -> baseline -> control check -> accuracy + results
-  file. `run_b1.py` runs against either the synthetic sample logs or the real
-  Who&When benchmark (see "Reference repo").
-- **Test suite** (`tests/`) - 18 tests: ingestion, the ledger (including
-  tamper detection), B0, B1 (all three methods), the two implemented controls,
-  and a real-data smoke test that is skipped automatically if the reference
-  repo below isn't present.
+- **Ingestion** (`src/agentledger/ingestion.py`) — Who&When-style JSON
+  (synthetic and the real release, both Hand-Crafted and Algorithm-Generated
+  subsets, via `load_whowhen_release_full`).
+- **Integrity Ledger** (`src/agentledger/ledger.py`) — SHA-256 hash chain for
+  Gap 2. Provenance graph linking entries to agent/tool-call/input/output:
+  **pending (Areej)**.
+- **Control catalogue** (`src/agentledger/controls.py`) — 12 declared
+  controls mapped to ISO/IEC 42001 clauses and NIST AI RMF functions; **5
+  implemented** (CTRL-01, 02, 03, 07, 11), 7 remain declared-but-unbuilt and
+  are skipped (not silently passed) by the Policy Checker.
+- **Gap 1 agents** (`src/agentledger/agents/{retriever,auditor,verifier}.py`)
+  — a Retriever that shortlists candidate records instead of reading the
+  whole log, an Auditor that proposes an agent/step claim citing specific
+  record ids, and a Verifier that re-reads only those records and rejects
+  unsupported claims (one revision pass).
+- **Gap 3 agent** (`src/agentledger/agents/policy_checker.py`) — runs every
+  implemented control predicate over a ledgered trajectory.
+- **Orchestrator** (`src/agentledger/orchestrator.py`) — `run_system(...)`,
+  the single entry point tying Auditor → Verifier → Policy Checker together,
+  gated by the ledger's integrity check; `use_verifier` / `use_policy_checker`
+  flags are the ablation switches for E5.
+- **Model provider interface** (`src/agentledger/providers.py`) — Mock
+  (offline, deterministic), Groq (free tier, with model fallback — what the
+  real-data runs below actually use), or Anthropic (paid, if you have a key).
+- **Baselines B0/B1** (`src/agentledger/baselines/`) — B0 from scratch; B1
+  re-implements the base paper's own three attribution methods, adapted from
+  its public code (kept as a separate reference clone, see below).
+- **Injected-violation suite** (`data/injected_violations/`, generated by
+  `eval/make_injected_violations.py`) — 30 synthetic cases (10 each for
+  CTRL-03/07/11, clean + violating) with planted ground truth.
+- **Reviewer-facing output**: **pending (Areej)**.
+- **Test suite** (`tests/`) — 33 tests: ingestion, ledger, baselines, all 5
+  implemented controls, and the full Gap 1 agent pipeline (retriever,
+  auditor, verifier, orchestrator, ablation flags).
 
-Not yet built: the Auditor/Retriever/Verifier/Policy Checker agents, baseline
-B2, the reviewer UI, and the full evaluation harness from B12 (including the
-compliance-question rubric test). Those are Phase 2.
-
-## Reference repo (base paper's code - kept separate)
+## Reference repo (base paper's code — kept separate)
 
 The base paper's own implementation,
 [`ag2ai/Agents_Failure_Attribution`](https://github.com/ag2ai/Agents_Failure_Attribution)
@@ -58,43 +92,17 @@ The base paper's own implementation,
 
 ```
 agentic/
-  project/                            <- this repo
+  project/                               <- this repo
   reference-Agents_Failure_Attribution/  <- read-only clone, not part of this repo
 ```
 
-Clone it yourself with `git clone https://github.com/ag2ai/Agents_Failure_Attribution.git`
-one level up from this project if you don't have it. It is **not** committed
-here and has no dependency relationship with this package - it's kept around
-purely as a reference for structure/format, per the assignment's expectation
-that Deliverable B/C baselines include "the base paper's approach where
-applicable."
+Clone it yourself one level up if you don't have it:
 
-**What was adapted from it, and where:**
-- `src/agentledger/baselines/b1_whowhen_reference.py` mirrors the three
-  methods in the reference repo's `Automated_FA/Lib/utils.py`
-  (`all_at_once`, `step_by_step`, `binary_search`) - same prompts and control
-  flow, each function's docstring says so.
-- `src/agentledger/ingestion.py::load_whowhen_release_record` mirrors the
-  reference repo's own field convention for the real dataset (`index_agent =
-  "role" if is_handcrafted else "name"`, from the same `Lib/utils.py`), so our
-  ingestion reads the *actual* Hand-Crafted/Algorithm-Generated JSON files
-  byte-for-byte the way their own code does.
-- Everything else (`schema.py`, `ledger.py`, `controls.py`, `tools.py`,
-  `providers.py`, baseline B0) was written from scratch for AgentLedger and
-  has no counterpart in the reference repo.
+```bash
+git clone https://github.com/ag2ai/Agents_Failure_Attribution.git ../reference-Agents_Failure_Attribution
+```
 
-**Model availability (per the assignment's note to flag unavailable
-models):** the reference repo's `inference.py` only supports Azure OpenAI
-(`gpt-4o`/`gpt-4`/`gpt-4o-mini`, via `AzureOpenAI`, requiring an Azure
-endpoint + key - not a plain OpenAI key) or local Llama-3.1 (8B/70B) /
-Qwen2.5 (7B/72B) through `transformers`, needing a GPU with enough VRAM to
-hold an 8B+ model. **None of these are available in this environment** - no
-Azure OpenAI subscription, no local GPU. `b1_whowhen_reference.py` therefore
-runs the same three methods through AgentLedger's own provider interface
-instead: `MockProvider` (deterministic, offline) by default, or our
-`AnthropicProvider` (Claude, hosted) if you set `ANTHROPIC_API_KEY`. This
-substitutes the *model* only - the method logic and prompts are unchanged
-from the reference implementation.
+It has the real Who&When benchmark at `../reference-Agents_Failure_Attribution/Who&When/{Hand-Crafted,Algorithm-Generated}/`.
 
 ## Setup
 
@@ -103,62 +111,99 @@ pip install -e .
 pip install pytest   # or: pip install -e .[dev]
 ```
 
-To use the real hosted model instead of the offline mock:
+Copy `.env.example` to `.env` and fill in **one** provider key (free Groq is
+what every real-data result in `results/` actually used):
 
 ```bash
-pip install -e .[hosted]
-export ANTHROPIC_API_KEY=sk-...   # Windows: set ANTHROPIC_API_KEY=sk-...
+cp .env.example .env
+# then set GROQ_API_KEY (free, get one at https://console.groq.com)
+pip install -e .[groq]
+export GROQ_API_KEY=gsk_...   # Windows: set GROQ_API_KEY=gsk_...
 ```
 
-With no API key set, everything below runs against the deterministic
-`MockProvider` - no network access required.
+With no key set, everything runs against the deterministic, offline
+`MockProvider` instead — useful for the test suite, not representative of
+real accuracy.
 
 ## Running it
 
 ```bash
-# run the test suite
+# test suite
 python -m pytest tests/ -v
 
-# baseline B0, on the synthetic sample logs
-python eval/run_baseline.py
+# E1 — baseline B0 on the real Who&When subset
+python eval/run_baseline.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20
 
-# baseline B1, all three methods, on the synthetic sample logs
-python eval/run_b1.py
+# E2 — baseline B1 (base paper method), same subset
+python eval/run_b1.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --method all_at_once
 
-# baseline B1, one method, on a slice of the REAL Who&When benchmark
-# (requires the reference repo cloned as described above)
-python eval/run_b1.py --method all_at_once \
-  --real-whowhen-dir "../reference-Agents_Failure_Attribution/Who&When/Hand-Crafted" \
-  --is-handcrafted --limit 20
+# E3 — the full system
+python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20
+
+# E5 — ablation: remove the Verifier
+python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --no-verifier
+
+# E4/Gap 3 — injected-violation suite
+python eval/make_injected_violations.py
+python eval/run_policy_eval.py
 ```
 
-Both scripts print per-run predictions and accuracy, and write full results to
-`results/baseline_b0_results.json` / `results/baseline_b1_results.json`.
+Every script prints a live accuracy summary and writes full per-run results
+to a file under `results/`. `--limit N` controls the sample size; omit it to
+run the full 184-log benchmark (slow on the free tier — budget hours, not
+minutes; see `docs/devlog.md`).
+
+## Results & write-ups
+
+- [`results/gap_resolution_table_gap1_gap3.md`](results/gap_resolution_table_gap1_gap3.md) — the assembled gap-resolution table, reproduction commands, honest summary.
+- [`results/failure_analysis_gap1.md`](results/failure_analysis_gap1.md) — failure categories, frequencies, representative success/failure cases with trajectories.
+- [`results/e5_ablation_gap3.md`](results/e5_ablation_gap3.md) — why/how Gap 3's ablation is measured via the injected-violation suite.
+- [`results/e6_efficiency.md`](results/e6_efficiency.md) — cost/latency/reliability comparison across E1/E2/E3/E5.
+- [`results/gap1_ablation_summary.json`](results/gap1_ablation_summary.json) — the computed grounded-correct / unsupported-claim metrics.
+- `docs/devlog.md` — dated development log (what broke, what changed, measured effect).
 
 ## Data
 
-`data/sample_logs/` holds three small **synthetic** logs used for the smoke
-tests above - see `data/sample_logs/README.md`. For real data, point
-`eval/run_b1.py` at the reference repo's benchmark folder, as shown above.
+`data/sample_logs/` — three small synthetic logs for fast smoke tests.
+`data/injected_violations/` — the Gap 3 ground-truth suite. Real data comes
+from the reference repo (see above); point any `eval/*.py` script's
+`--real-whowhen-root` at it.
 
 ## Layout
 
 ```
 src/agentledger/
-  schema.py            normalised Event/RunLog model
-  ingestion.py         log-format -> RunLog (synthetic + real Who&When release)
-  ledger.py            hash-chain Integrity Ledger
-  controls.py          ISO/IEC 42001 + NIST AI RMF control catalogue
-  tools.py              read_span / search_log / get_provenance / verify_chain / check_control
-  providers.py          LLM provider interface (mock / hosted)
+  schema.py                    normalised Event/RunLog model
+  ingestion.py                 log-format -> RunLog (synthetic + real Who&When release)
+  ledger.py                    hash-chain Integrity Ledger
+  controls.py                  ISO/IEC 42001 + NIST AI RMF control catalogue (5/12 implemented)
+  tools.py                      read_span / search_log / get_provenance / verify_chain / check_control
+  providers.py                  LLM provider interface (mock / Groq with fallback / Anthropic)
+  orchestrator.py               run_system(): Auditor -> Verifier -> Policy Checker, ledger-gated
+  agents/
+    retriever.py                 candidate-record shortlisting (Gap 1)
+    auditor.py                   cited-claim proposal (Gap 1)
+    verifier.py                  citation re-check + reject/revise (Gap 1)
+    policy_checker.py            runs implemented control predicates (Gap 3)
   baselines/
-    b0_single_call.py          baseline B0 (from scratch)
-    b1_whowhen_reference.py    baseline B1 (adapted from the reference repo)
-data/sample_logs/      synthetic smoke-test logs
-eval/run_baseline.py   end-to-end workflow, B0
-eval/run_b1.py         end-to-end workflow, B1 (sample or real data)
-tests/                 pytest suite (18 tests)
-doc/                   Phase 1 literature review, gaps & proposal (.docx)
+    b0_single_call.py            baseline B0 (from scratch)
+    b1_whowhen_reference.py      baseline B1 (adapted from the reference repo)
+data/
+  sample_logs/                 synthetic smoke-test logs
+  injected_violations/         Gap 3 ground-truth suite (generated)
+eval/
+  run_baseline.py               E1 workflow (B0)
+  run_b1.py                     E2 workflow (B1)
+  run_system.py                 E3/E5 workflow (full system + ablation flags)
+  make_injected_violations.py   generates the Gap 3 suite
+  run_policy_eval.py            E4 workflow for Gap 3
+results/                       all experiment outputs + write-ups (see above)
+tests/                         pytest suite (33 tests)
+docs/
+  phase2_plan.md                branch strategy, file ownership, interface contract
+  AREEJ_TASKS.md                 Areej's task list
+  devlog.md                      dated development log
+doc/                            Phase 1 literature review, gaps & proposal (.docx), architecture diagrams
 
 ../reference-Agents_Failure_Attribution/   base paper's own code (sibling folder, not part of this repo)
 ```
