@@ -91,3 +91,15 @@ def load_whowhen_release_dir(directory: str | Path, is_handcrafted: bool, limit:
     if limit is not None:
         paths = paths[:limit]
     return [load_whowhen_release_record(p, is_handcrafted) for p in paths]
+
+
+def load_whowhen_release_full(root: str | Path, limit: int | None = None) -> list[RunLog]:
+    """load the full real who&when release: Hand-Crafted/ + Algorithm-Generated/ under root.
+
+    `limit`, if given, caps the total count (split evenly across the two subsets).
+    """
+    root = Path(root)
+    sub_limit = None if limit is None else max(1, limit // 2)
+    runs = load_whowhen_release_dir(root / "Hand-Crafted", is_handcrafted=True, limit=sub_limit)
+    runs += load_whowhen_release_dir(root / "Algorithm-Generated", is_handcrafted=False, limit=sub_limit)
+    return runs

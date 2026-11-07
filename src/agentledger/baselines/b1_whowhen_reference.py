@@ -25,9 +25,15 @@ class B1Prediction:
     raw_response: str
 
 
+_MAX_LOG_CHARS = 12000  # keeps prompts under free-tier token-per-minute caps; tail-truncate like B0
+
+
 def _history_text(run: RunLog, start: int = 0, end: int | None = None) -> str:
     end = len(run.events) - 1 if end is None else end
-    return "\n".join(f"[{i}] {run.events[i].agent}: {run.events[i].content}" for i in range(start, end + 1))
+    text = "\n".join(f"[{i}] {run.events[i].agent}: {run.events[i].content}" for i in range(start, end + 1))
+    if len(text) > _MAX_LOG_CHARS:
+        text = "...[truncated]...\n" + text[-_MAX_LOG_CHARS:]
+    return text
 
 
 # all-at-once: mirrors Lib/utils.py::all_at_once

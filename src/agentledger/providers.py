@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import re
+import time
 from abc import ABC, abstractmethod
 
 
@@ -82,8 +83,45 @@ class AnthropicProvider(LLMProvider):
         return response.content[0].text
 
 
+class GroqProvider(LLMProvider):
+    """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package."""
+
+    def __init__(self, model: str = "openai/gpt-oss-20b") -> None:
+        try:
+            import groq
+        except ImportError as exc:
+            raise RuntimeError(
+                "install the 'groq' extra (pip install -e .[groq]) to use GroqProvider"
+            ) from exc
+        api_key = os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            raise RuntimeError("set GROQ_API_KEY to use GroqProvider")
+        self._client = groq.Groq(api_key=api_key)
+        self._model = model
+
+    def generate(self, prompt: str) -> str:
+        """calls the free-tier API with backoff on rate limits, since eval runs make many calls."""
+        import groq
+
+        for attempt in range(6):
+            try:
+                response = self._client.chat.completions.create(
+                    model=self._model,
+                    max_tokens=256,
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                return response.choices[0].message.content
+            except (groq.RateLimitError, groq.APIStatusError) as exc:
+                if isinstance(exc, groq.APIStatusError) and "rate_limit" not in str(exc).lower():
+                    raise
+                time.sleep(2 ** attempt)
+        raise RuntimeError("GroqProvider: rate-limited after repeated retries")
+
+
 def get_default_provider() -> LLMProvider:
-    """anthropic if a key is set, else the offline mock."""
+    """anthropic if a key is set, else groq, else the offline mock."""
     if os.environ.get("ANTHROPIC_API_KEY"):
         return AnthropicProvider()
+    if os.environ.get("GROQ_API_KEY"):
+        return GroqProvider()
     return MockProvider()
