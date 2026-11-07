@@ -54,3 +54,18 @@ Dated entries, append-only. Each entry: what failed/was missing, what changed, m
 - **Still open:** E5 ablation (`--no-verifier`) queued next on the same 20 logs for a
   like-for-like comparison. Full-184-log E1/E2/E3 runs deferred until later (per team decision,
   prioritizing getting the Phase 2 pipeline built first within the 24h window).
+
+## 2026-11-07 — Armish — E5 ablation result: the Verifier is doing its job
+
+- **Observed:** ran the same 20 real logs with `--no-verifier` for a like-for-like E5 comparison
+  (see `results/system_results_noverifier.json`, summarized in `results/gap1_ablation_summary.json`).
+- **Result:** with the Verifier on, agent accuracy 40% / step accuracy 20%, but only 5% of claims
+  pass verification — of those, **0% are wrong** (unsupported-claim rate 0%, beating Phase 1's own
+  H1 target of "under 5%"). With the Verifier off, agent accuracy drops slightly to 35% / step
+  accuracy drops sharply to 5%, but the system now calls 80% of its claims "verified" — of those,
+  **56% are actually wrong**. The Verifier trades coverage for precision: it correctly flags that
+  most single-citation claims aren't solid enough to trust, at the cost of verifying very few
+  claims at all (1/19 in this sample).
+- **Effect:** this is a clean, honest Gap 1 result for the paper's Results/Ablation sections — the
+  core claim ("requiring cited records + a Verifier reduces unsupported claims") holds up on real
+  data, with the expected precision/recall trade-off as the limitation to discuss.
