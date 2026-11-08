@@ -112,12 +112,26 @@ class AnthropicProvider(LLMProvider):
 
 
 class GroqProvider(LLMProvider):
-    """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package."""
+    """hosted provider on Groq's free-tier API. requires GROQ_API_KEY and the optional groq package.
 
+    each model on the free tier has its own ~200k-tokens/day cap, easy to exhaust across a long
+    eval run. rather than fail the whole run, this falls back through a chain of free models,
+    advancing whenever one's daily quota is hit (a reliability mechanism in its own right, not
+    just a workaround -- the same "retry/recover" behaviour the Phase 2 brief asks the system to
+    demonstrate).
+    """
+
+    _FALLBACK_CHAIN = [
+        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "openai/gpt-oss-safeguard-20b",
+        "allam-2-7b",
+    ]
     _MIN_GAP_SECONDS = 3.0  # paces calls so a long batch doesn't burst past the free-tier TPM cap
     _last_call_at: float = 0.0
 
-    def __init__(self, model: str = "openai/gpt-oss-20b") -> None:
+    def __init__(self, model: str | None = None) -> None:
         super().__init__()
         try:
             import groq
@@ -128,37 +142,261 @@ class GroqProvider(LLMProvider):
         api_key = os.environ.get("GROQ_API_KEY")
         if not api_key:
             raise RuntimeError("set GROQ_API_KEY to use GroqProvider")
-        self._client = groq.Groq(api_key=api_key)
-        self._model = model
+        self._client = groq.Groq(api_key=api_key, timeout=30.0)
+        self._models = [model] if model else list(self._FALLBACK_CHAIN)
+        self._model_idx = 0
+        self.model_switches: list[str] = []  # audit trail: which models this run actually used
+
+    @property
+    def _model(self) -> str:
+        return self._models[self._model_idx]
 
     def _generate_impl(self, prompt: str) -> str:
-        """calls the free-tier API with pacing + backoff on rate limits, since eval runs make many calls."""
+        """calls the free-tier API with pacing + backoff, falling back to the next model on a
+        daily-token-quota error (TPD) since that can't clear within any reasonable backoff window."""
         import groq
 
-        wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
-        if wait > 0:
-            time.sleep(wait)
+        while True:
+            wait = self._MIN_GAP_SECONDS - (time.monotonic() - GroqProvider._last_call_at)
+            if wait > 0:
+                time.sleep(wait)
 
-        for attempt in range(10):
+            for attempt in range(6):
+                try:
+                    response = self._client.chat.completions.create(
+                        model=self._model,
+                        max_tokens=500,
+                        messages=[{"role": "user", "content": prompt}],
+                    )
+                    GroqProvider._last_call_at = time.monotonic()
+                    content = response.choices[0].message.content
+                    if content is None:
+                        # some models return a null content on certain finish reasons (e.g.
+                        # content filtering, or truncation with no text emitted) instead of an
+                        # error -- treat it as a failed attempt on this model rather than
+                        # propagating None up through generate()'s len(text) and crashing the run.
+                        time.sleep(min(2**attempt, 30))
+                        continue
+                    return content
+                except (groq.RateLimitError, groq.APIStatusError) as exc:
+                    message = str(exc).lower()
+                    if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
+                        # a context-length overflow ("reduce the length of the messages") is
+                        # model-specific (each model in the chain has a different context
+                        # window) -- switch models instead of raising immediately, which was
+                        # killing the whole run on logs too long for the current model but
+                        # short enough for another one in the chain.
+                        if "reduce the length" in message or "context" in message:
+                            break
+                        raise
+                    if "tokens per day" in message or " tpd" in message:
+                        break  # daily quota won't clear within any backoff window -- stop retrying, switch models
+                    time.sleep(min(2 ** attempt, 30))
+
+            # advance on EITHER a confirmed daily-quota hit or plain retry exhaustion (a model
+            # that keeps rate-limiting for 6 backoff rounds is as unusable right now as one
+            # whose quota is confirmed exhausted) -- fixes a bug where retry-exhaustion raised
+            # immediately instead of trying the next model in the chain.
+            if self._model_idx + 1 < len(self._models):
+                self.model_switches.append(self._model)
+                self._model_idx += 1
+                continue  # retry immediately on the next model in the chain
+
+            raise RuntimeError(
+                f"GroqProvider: no usable model left (tried {self._models}); "
+                "all hit their daily quota or kept rate-limiting"
+            )
+
+    def stats(self) -> dict:
+        base = super().stats()
+        base["model"] = self._model
+        base["model_switches"] = list(self.model_switches)
+        return base
+
+
+class OpenRouterProvider(LLMProvider):
+    """hosted provider on OpenRouter's free-tier models. requires OPENROUTER_API_KEY. Used as a
+    second free-tier source when Groq's own 5-model fallback chain is exhausted (see
+    FallbackProvider / get_default_provider()), rather than paying for a hosted key.
+
+    Free models on OpenRouter rotate over time (unlike Groq's fixed catalog), so the fallback
+    chain is discovered from OpenRouter's live /models catalog (entries with zero prompt and
+    completion price) at construction time, falling back to a small hardcoded list only if that
+    lookup itself fails. Uses stdlib urllib rather than a new dependency, since the API is plain
+    JSON-over-HTTPS. Not validated against a live key in this session -- mirrors GroqProvider's
+    pacing/backoff/model-fallback pattern, which was validated at length against real traffic.
+    """
+
+    _STATIC_FALLBACK_MODELS = [
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemini-2.0-flash-exp:free",
+        "mistralai/mistral-7b-instruct:free",
+    ]
+    _MIN_GAP_SECONDS = 2.0
+    _last_call_at: float = 0.0
+
+    def __init__(self, model: str | None = None) -> None:
+        super().__init__()
+        api_key = os.environ.get("OPENROUTER_API_KEY")
+        if not api_key:
+            raise RuntimeError("set OPENROUTER_API_KEY to use OpenRouterProvider")
+        self._api_key = api_key
+        self._models = [model] if model else (self._discover_free_models() or list(self._STATIC_FALLBACK_MODELS))
+        self._model_idx = 0
+        self.model_switches: list[str] = []  # audit trail: which models this run actually used
+
+    @property
+    def _model(self) -> str:
+        return self._models[self._model_idx]
+
+    def _discover_free_models(self) -> list[str]:
+        """queries OpenRouter's live model catalog for currently-free models, since the free
+        list changes over time and a hardcoded chain would go stale. best-effort: any failure
+        (network, auth, schema change) falls back to _STATIC_FALLBACK_MODELS instead of raising,
+        since this is just picking a default chain, not the actual generation call."""
+        import json
+        import urllib.request
+
+        try:
+            req = urllib.request.Request(
+                "https://openrouter.ai/api/v1/models",
+                headers={"Authorization": f"Bearer {self._api_key}"},
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            free = [
+                m["id"]
+                for m in data.get("data", [])
+                if float(m.get("pricing", {}).get("prompt", "1") or "1") == 0.0
+                and float(m.get("pricing", {}).get("completion", "1") or "1") == 0.0
+            ]
+            return free[:8]  # cap the chain length
+        except Exception:
+            return []
+
+    def _generate_impl(self, prompt: str) -> str:
+        """calls OpenRouter with pacing + backoff, falling back to the next free model after a
+        few failed attempts on one (mirrors GroqProvider's advance-on-retry-exhaustion fix)."""
+        import json
+        import urllib.error
+        import urllib.request
+
+        while True:
+            wait = self._MIN_GAP_SECONDS - (time.monotonic() - OpenRouterProvider._last_call_at)
+            if wait > 0:
+                time.sleep(wait)
+
+            for attempt in range(4):
+                try:
+                    body = json.dumps(
+                        {
+                            "model": self._model,
+                            "max_tokens": 500,
+                            "messages": [{"role": "user", "content": prompt}],
+                        }
+                    ).encode("utf-8")
+                    req = urllib.request.Request(
+                        "https://openrouter.ai/api/v1/chat/completions",
+                        data=body,
+                        headers={
+                            "Authorization": f"Bearer {self._api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        method="POST",
+                    )
+                    with urllib.request.urlopen(req, timeout=60) as resp:
+                        result = json.loads(resp.read().decode("utf-8"))
+                    OpenRouterProvider._last_call_at = time.monotonic()
+                    content = result["choices"][0]["message"]["content"]
+                    if content is None:
+                        time.sleep(min(2**attempt, 20))
+                        continue
+                    return content
+                except urllib.error.HTTPError as exc:
+                    if exc.code == 429:
+                        time.sleep(min(2**attempt, 20))
+                        continue
+                    if exc.code == 401:
+                        message = exc.read().decode("utf-8", errors="replace")
+                        raise RuntimeError(f"OpenRouterProvider: HTTP 401 (bad API key): {message[:300]}") from exc
+                    # a model-specific failure (403 unavailable in region, 404 model not
+                    # found/deprecated, 400 bad request for this model, etc.), not a
+                    # transient rate limit -- retrying the same model is pointless, so
+                    # break out and switch to the next free model immediately (discovered
+                    # live from this session's smoke test: OpenRouter's free list includes
+                    # at least one model, "stealth/crouton-alpha", that 403s as
+                    # region-unavailable -- can't be filtered out at discovery time since
+                    # the /models listing doesn't expose per-region availability).
+                    break
+
+            # retry budget exhausted, or a model-specific failure -- switch to the next free model
+            if self._model_idx + 1 < len(self._models):
+                self.model_switches.append(self._model)
+                self._model_idx += 1
+                continue
+            raise RuntimeError(
+                f"OpenRouterProvider: no usable model left (tried {self._models}); all rate-limited"
+            )
+
+    def stats(self) -> dict:
+        base = super().stats()
+        base["model"] = self._model
+        base["model_switches"] = list(self.model_switches)
+        return base
+
+
+class FallbackProvider(LLMProvider):
+    """wraps several providers end to end (e.g. Groq -> OpenRouter): tries the current one, and
+    when it raises RuntimeError (its own internal model-fallback chain exhausted), advances to
+    the next provider and retries immediately. Same "don't lose the whole run over one exhausted
+    service" principle GroqProvider/OpenRouterProvider already apply across models, one level up
+    across providers -- lets an overnight batch survive Groq's free tier running out by falling
+    through to OpenRouter's, with zero manual intervention."""
+
+    def __init__(self, providers: list[LLMProvider]) -> None:
+        super().__init__()
+        if not providers:
+            raise RuntimeError("FallbackProvider needs at least one provider")
+        self._providers = providers
+        self._idx = 0
+        self.provider_switches: list[str] = []  # audit trail: which providers this run actually used
+
+    def _generate_impl(self, prompt: str) -> str:
+        while True:
+            provider = self._providers[self._idx]
             try:
-                response = self._client.chat.completions.create(
-                    model=self._model,
-                    max_tokens=500,
-                    messages=[{"role": "user", "content": prompt}],
-                )
-                GroqProvider._last_call_at = time.monotonic()
-                return response.choices[0].message.content
-            except (groq.RateLimitError, groq.APIStatusError) as exc:
-                if isinstance(exc, groq.APIStatusError) and "rate_limit" not in str(exc).lower():
-                    raise
-                time.sleep(min(2 ** attempt, 30))
-        raise RuntimeError("GroqProvider: rate-limited after repeated retries")
+                return provider._generate_impl(prompt)
+            except RuntimeError:
+                if self._idx + 1 < len(self._providers):
+                    self.provider_switches.append(type(provider).__name__)
+                    self._idx += 1
+                    continue
+                raise
+
+    def stats(self) -> dict:
+        base = super().stats()
+        base["provider_switches"] = list(self.provider_switches)
+        base["active_provider"] = type(self._providers[self._idx]).__name__
+        inner = self._providers[self._idx].stats()
+        base["active_provider_stats"] = inner
+        return base
 
 
 def get_default_provider() -> LLMProvider:
-    """anthropic if a key is set, else groq, else the offline mock."""
+    """anthropic if a key is set, else groq and/or openrouter (wrapped in a FallbackProvider
+    when both are set, so a daily-quota exhaustion on one falls through to the other mid-run),
+    else the offline mock."""
     if os.environ.get("ANTHROPIC_API_KEY"):
         return AnthropicProvider()
+
+    candidates: list[LLMProvider] = []
     if os.environ.get("GROQ_API_KEY"):
-        return GroqProvider()
+        candidates.append(GroqProvider())
+    if os.environ.get("OPENROUTER_API_KEY"):
+        candidates.append(OpenRouterProvider())
+
+    if len(candidates) > 1:
+        return FallbackProvider(candidates)
+    if candidates:
+        return candidates[0]
     return MockProvider()

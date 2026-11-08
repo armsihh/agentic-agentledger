@@ -26,24 +26,50 @@ class AuditFinding:
     rationale: str = ""
 
 
-def run_system(
+def _run_system_impl(
     run: RunLog,
     provider: LLMProvider,
     ledger: IntegrityLedger,
-    *,
-    use_verifier: bool = True,
-    use_policy_checker: bool = True,
-) -> list[AuditFinding]:
-    ledger_ok, _break_index = ledger.verify()
+    use_verifier: bool,
+    use_policy_checker: bool,
+) -> tuple[list[AuditFinding], list[dict]]:
+    """shared implementation. returns (findings, trajectory) -- trajectory is the step-by-step
+    observability log (retrieval -> propose -> verify -> [revise -> re-verify] -> policy checks)
+    required by the Phase 2 brief's "logged agent trajectories" requirement; `run_system()` below
+    keeps its existing return type (just findings) since that's the stable interface Areej's
+    harness is built against, and `run_system_with_trace()` is the new entry point for anyone
+    who wants the full trace (see `eval/run_system.py`'s --log-trajectories flag)."""
+    trajectory: list[dict] = []
+
+    ledger_ok, break_index = ledger.verify()
+    trajectory.append({"stage": "ledger_check", "ledger_ok": ledger_ok, "break_index": break_index})
 
     candidates = retrieve_candidates(run)
+    trajectory.append({"stage": "retrieve", "candidate_ids": [e.event_id for e in candidates]})
+
     claim = auditor.propose(run, provider, candidates)
+    trajectory.append(
+        {"stage": "auditor_propose", "raw_response": claim.raw_response, "agent": claim.agent,
+         "step": claim.step, "cited_record_ids": claim.cited_record_ids, "rationale": claim.rationale}
+    )
 
     if use_verifier:
         result = verifier.verify(run, provider, claim)
+        trajectory.append(
+            {"stage": "verifier_check", "raw_response": result.raw_response, "verified": result.verified,
+             "reason": result.reason}
+        )
         if not result.verified:
             revised = auditor.revise(run, provider, candidates, result.reason)
+            trajectory.append(
+                {"stage": "auditor_revise", "raw_response": revised.raw_response, "agent": revised.agent,
+                 "step": revised.step, "cited_record_ids": revised.cited_record_ids, "rationale": revised.rationale}
+            )
             revised_result = verifier.verify(run, provider, revised)
+            trajectory.append(
+                {"stage": "verifier_recheck", "raw_response": revised_result.raw_response,
+                 "verified": revised_result.verified, "reason": revised_result.reason}
+            )
             claim, result = revised, revised_result
         claim_verified = result.verified and ledger_ok
     else:
@@ -66,6 +92,9 @@ def run_system(
         for pr in run_policy_checks(run, ledger):
             if not pr.implemented:
                 continue
+            trajectory.append(
+                {"stage": "policy_check", "control_id": pr.control_id, "passed": pr.passed, "evidence": pr.evidence}
+            )
             findings.append(
                 AuditFinding(
                     run_id=run.run_id,
@@ -79,4 +108,29 @@ def run_system(
                 )
             )
 
+    return findings, trajectory
+
+
+def run_system(
+    run: RunLog,
+    provider: LLMProvider,
+    ledger: IntegrityLedger,
+    *,
+    use_verifier: bool = True,
+    use_policy_checker: bool = True,
+) -> list[AuditFinding]:
+    findings, _trajectory = _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker)
     return findings
+
+
+def run_system_with_trace(
+    run: RunLog,
+    provider: LLMProvider,
+    ledger: IntegrityLedger,
+    *,
+    use_verifier: bool = True,
+    use_policy_checker: bool = True,
+) -> tuple[list[AuditFinding], list[dict]]:
+    """same as run_system(), plus the full step-by-step trajectory log (see
+    `_run_system_impl`'s docstring). Used by `eval/run_system.py` to populate `logs/`."""
+    return _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker)

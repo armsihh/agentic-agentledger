@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from agentledger.ingestion import load_logs_from_dir, load_whowhen_release_full
 from agentledger.ledger import IntegrityLedger
-from agentledger.orchestrator import run_system
+from agentledger.orchestrator import run_system_with_trace
 from agentledger.providers import get_default_provider
 
 
@@ -44,7 +44,12 @@ def main() -> None:
     parser.add_argument("--no-verifier", action="store_true")
     parser.add_argument("--no-policy-checker", action="store_true")
     parser.add_argument("--out", default="results/system_results.json")
+    parser.add_argument("--trajectory-dir", default="logs", help="per-run step-by-step trace output (observability); pass '' to skip writing")
     args = parser.parse_args()
+
+    trajectory_dir = Path(args.trajectory_dir) if args.trajectory_dir else None
+    if trajectory_dir:
+        trajectory_dir.mkdir(parents=True, exist_ok=True)
 
     provider = get_default_provider()
     print(f"Using provider: {type(provider).__name__}")
@@ -65,12 +70,26 @@ def main() -> None:
         print(f"  {i}/{len(runs)} {run.run_id}", end="\r")
         ledger = _build_ledger(run)
         try:
-            findings = run_system(run, provider, ledger, use_verifier=use_verifier, use_policy_checker=use_policy_checker)
+            findings, trajectory = run_system_with_trace(
+                run, provider, ledger, use_verifier=use_verifier, use_policy_checker=use_policy_checker
+            )
         except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
             errors += 1
             per_run.append({"run_id": run.run_id, "error": str(exc)})
             continue
         gap1 = findings[0]
+
+        if trajectory_dir:
+            # index-prefixed: the real Who&When release has ~45 question_IDs (= our run_id)
+            # that collide across the Hand-Crafted/Algorithm-Generated split (e.g. both
+            # Algorithm-Generated/125.json and Hand-Crafted/1.json carry the same question_ID),
+            # so run_id alone isn't a safe filename at full-184 scale -- it would silently
+            # overwrite ~45 trajectory files pairwise. Scoring itself is unaffected (ground
+            # truth is compared per run object, never looked up by run_id), only this filename.
+            safe_name = f"{i:03d}_{run.run_id.replace('/', '_')}"
+            (trajectory_dir / f"{safe_name}.json").write_text(
+                json.dumps({"run_id": run.run_id, "trajectory": trajectory}, indent=2), encoding="utf-8"
+            )
 
         agent_ok = run.ground_truth is not None and gap1.agent == run.ground_truth.responsible_agent
         both_ok = agent_ok and run.ground_truth is not None and gap1.step == run.ground_truth.decisive_step

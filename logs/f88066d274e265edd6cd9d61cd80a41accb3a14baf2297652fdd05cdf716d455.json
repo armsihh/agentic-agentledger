@@ -1,0 +1,79 @@
+{
+  "run_id": "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-0",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-1",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-13",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-14",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-15",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-16"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"WebSurfer\", \"step\": 18, \"cited_record_ids\": [\"f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d4e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d4e265ed \u00a8CAN4E4A1cD6BaF2974e26dcd74D6aF \u0cd04D6BaF2974e26dcd74e265ed\n[ 4D674E4aF2974e26dcd74D6aF2874e26dcd74E4A1cD6BaF5cd80a3A1B874Ed2aB847D4B1cD974E26dB0a190c8974Ba190d2aB80c974E26dB0a190d3A874B0a3B9970c80a3B1974D6B0c3A80c974Ed26dB0a1974E26D80A19480cD974E26dB0a190c8726dB1990cA80b0a194c982b0a3a190d c2bf80c95c4dB0a3b0BD95c80A19B726dBD4a190d80c32bf80c95dB0a190d3BD4a190c80d20BD8cc196c2bf80dB190d3BD4D4",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"WebSurfer\", \"step\": 15, \"cited_record_ids\": [\"f88066d274e56fccd80a802c_6016a4e0d938a6a95e90a0b8d989ad90a2380d7d89fa06f080ef46a81a16c6df07a9809ad507e40d00b8538f9a5b0309a3932f98dd40330b2f97a489df032f9a104983bf1033073fa07392c0d600fa8df407a10d0fa573f93f382b0538fa0912a0739df4ab905a49b89f70d0a8393a90f9fb738a09bf0f31a409f8ca03df491a8bd6a8ab3a0bfaa68df1a400d311038dd179abd8eda8dbd73a5b3f8ab37f640a8cb389a80f0f8fa3fb5987a26c3b5cb09df9a13df6bfc5d3106a3kf16d39d8aa4bf1809dib359t8bf1bf2d3f1bfbf16f59a6c8bf5f89a21b0d6dfb05d9a6c5d4ed09a20fa50c5a40bf07c5a48add09avf73bfbca7cd5af0fa2c9cdka44bf4ab0af",
+      "agent": "unknown",
+      "step": -1,
+      "cited_record_ids": [],
+      "rationale": "could not parse model output"
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "",
+      "verified": false,
+      "reason": "no cited records"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=17 events=17 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": false,
+      "evidence": "error_steps=[1] corrective_action_found_after=False"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

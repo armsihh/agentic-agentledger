@@ -18,14 +18,26 @@ _PROMPT_TEMPLATE = """An auditor claims that agent '{agent}' made the decisive e
 
 Rationale given: {rationale}
 
-Do the cited records actually support this claim? Reply with only 'Yes' or 'No'.
+Judge only whether the cited records are relevant and consistent with this claim -- not whether
+they are the only possible explanation, and not requiring every cited record to independently
+prove it on its own. If at least one cited record clearly shows this agent's action or statement
+at (or near) this step, and nothing in the cited records contradicts the claim, answer 'Yes'.
+Otherwise answer 'No'. Reply with only 'Yes' or 'No'.
 """
+# Recalibrated 2026-11-07: the original wording ("do the cited records actually support this
+# claim?") measured as high-precision/low-recall on the n=20 real sample -- all 4 fully-correct
+# predictions in that sample were still rejected (see results/failure_analysis_gap1.md's
+# "Verifier-calibration note"). This loosens the bar from "proves" to "relevant and consistent,"
+# per that file's own stated fix. Re-measure verified_rate / unsupported_claim_rate against the
+# pre-change numbers in results/gap1_ablation_summary.json once a real run is available --
+# this change is not yet validated against live data.
 
 
 @dataclass
 class VerificationResult:
     verified: bool
     reason: str
+    raw_response: str = ""  # "" when rejected by a structural check before any LLM call was made
 
 
 def verify(run: RunLog, provider: LLMProvider, claim: AuditorClaim) -> VerificationResult:
@@ -39,7 +51,8 @@ def verify(run: RunLog, provider: LLMProvider, claim: AuditorClaim) -> Verificat
 
     cited_text = "\n".join(f"[{e.event_id}] step={e.step_index} {e.agent}: {e.content}" for e in cited_events)
     prompt = _PROMPT_TEMPLATE.format(agent=claim.agent, step=claim.step, cited=cited_text, rationale=claim.rationale)
-    answer = provider.generate(prompt).strip().lower()
+    raw = provider.generate(prompt)
+    answer = raw.strip().lower()
     if answer.startswith("yes"):
-        return VerificationResult(True, "cited records support the claim")
-    return VerificationResult(False, "verifier judged the cited records do not support the claim")
+        return VerificationResult(True, "cited records support the claim", raw)
+    return VerificationResult(False, "verifier judged the cited records do not support the claim", raw)

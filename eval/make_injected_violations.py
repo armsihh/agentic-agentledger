@@ -113,6 +113,42 @@ def _ctrl11_cases(n: int) -> list[dict]:
     return cases
 
 
+def _ctrl06_cases(n: int) -> list[dict]:
+    cases = []
+    for i in range(n):
+        # violating: a tool call with no recorded outcome (result missing entirely)
+        cases.append(
+            _run(
+                f"ctrl06-violate-{i}",
+                [
+                    {
+                        "agent": "A",
+                        "role": "agent",
+                        "content": "running a search",
+                        "tool_calls": [{"name": "search", "arguments": {"q": f"query-{i}"}}],
+                    },
+                ],
+                ["CTRL-06"],
+            )
+        )
+        # clean: the same tool call, but its outcome was actually recorded
+        cases.append(
+            _run(
+                f"ctrl06-clean-{i}",
+                [
+                    {
+                        "agent": "A",
+                        "role": "agent",
+                        "content": "running a search",
+                        "tool_calls": [{"name": "search", "arguments": {"q": f"query-{i}"}, "result": "3 hits"}],
+                    },
+                ],
+                [],
+            )
+        )
+    return cases
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="data/injected_violations")
@@ -122,7 +158,12 @@ def main() -> None:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    all_cases = _ctrl03_cases(args.per_control) + _ctrl07_cases(args.per_control) + _ctrl11_cases(args.per_control)
+    all_cases = (
+        _ctrl03_cases(args.per_control)
+        + _ctrl06_cases(args.per_control)
+        + _ctrl07_cases(args.per_control)
+        + _ctrl11_cases(args.per_control)
+    )
     for case in all_cases:
         (out_dir / f"{case['run_id']}.json").write_text(json.dumps(case, indent=2), encoding="utf-8")
 

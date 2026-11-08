@@ -7,7 +7,16 @@
       "tp": 10,
       "fp": 0,
       "fn": 0,
-      "tn": 50
+      "tn": 70
+    },
+    "CTRL-06": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 70
     },
     "CTRL-07": {
       "precision": 1.0,
@@ -16,7 +25,7 @@
       "tp": 10,
       "fp": 0,
       "fn": 0,
-      "tn": 50
+      "tn": 70
     },
     "CTRL-11": {
       "precision": 1.0,
@@ -25,7 +34,7 @@
       "tp": 10,
       "fp": 0,
       "fn": 0,
-      "tn": 50
+      "tn": 70
     }
   },
   "runs": [
@@ -36,6 +45,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -47,6 +57,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -58,6 +69,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -69,6 +81,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -80,6 +93,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -91,6 +105,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -102,6 +117,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -113,6 +129,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -124,6 +141,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -135,6 +153,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -148,6 +167,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -161,6 +181,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -174,6 +195,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -187,6 +209,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -200,6 +223,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -213,6 +237,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -226,6 +251,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -239,6 +265,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -252,6 +279,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -265,6 +293,267 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": false,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-0",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-1",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-2",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-3",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-4",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-5",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-6",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-7",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-8",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-clean-9",
+      "planted_violations": [],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": true,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-0",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-1",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-2",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-3",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-4",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-5",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-6",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-7",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-8",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
+        "CTRL-07": true,
+        "CTRL-11": true
+      }
+    },
+    {
+      "run_id": "ctrl06-violate-9",
+      "planted_violations": [
+        "CTRL-06"
+      ],
+      "control_results": {
+        "CTRL-01": true,
+        "CTRL-02": true,
+        "CTRL-03": true,
+        "CTRL-06": false,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -276,6 +565,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -287,6 +577,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -298,6 +589,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -309,6 +601,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -320,6 +613,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -331,6 +625,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -342,6 +637,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -353,6 +649,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -364,6 +661,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -375,6 +673,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -388,6 +687,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -401,6 +701,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -414,6 +715,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -427,6 +729,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -440,6 +743,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -453,6 +757,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -466,6 +771,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -479,6 +785,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -492,6 +799,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -505,6 +813,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": false,
         "CTRL-11": true
       }
@@ -516,6 +825,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -527,6 +837,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -538,6 +849,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -549,6 +861,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -560,6 +873,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -571,6 +885,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -582,6 +897,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -593,6 +909,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -604,6 +921,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -615,6 +933,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": true
       }
@@ -628,6 +947,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -641,6 +961,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -654,6 +975,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -667,6 +989,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -680,6 +1003,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -693,6 +1017,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -706,6 +1031,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -719,6 +1045,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -732,6 +1059,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }
@@ -745,6 +1073,7 @@
         "CTRL-01": true,
         "CTRL-02": true,
         "CTRL-03": true,
+        "CTRL-06": true,
         "CTRL-07": true,
         "CTRL-11": false
       }

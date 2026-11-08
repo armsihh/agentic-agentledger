@@ -39,6 +39,8 @@ def run_b0(run: RunLog, provider: LLMProvider) -> B0Prediction:
     try:
         parsed = json.loads(raw)
         agent, step = parsed["agent"], int(parsed["step"])
-    except (json.JSONDecodeError, KeyError, ValueError):
+    except (json.JSONDecodeError, KeyError, ValueError, TypeError):
+        # TypeError covers a reply that parses as valid JSON but isn't a dict (e.g. a bare
+        # number or list), where parsed["agent"] raises "not subscriptable" instead of KeyError.
         agent, step = "unknown", -1
     return B0Prediction(run_id=run.run_id, agent=agent, step=step, raw_response=raw)

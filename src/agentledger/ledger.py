@@ -44,7 +44,11 @@ class IntegrityLedger:
     def verify(self) -> tuple[bool, int | None]:
         """recompute every hash in order. returns (ok, index_of_first_break)."""
         prev_hash = GENESIS_HASH
-        for entry in self.entries:
+        for position, entry in enumerate(self.entries):
+            # the index is not part of the hash, so check it against the real position
+            # (found by eval/run_tamper_test.py: index-only edits used to pass the chain check)
+            if entry.index != position:
+                return False, position
             if entry.prev_hash != prev_hash:
                 return False, entry.index
             if _hash_entry(entry.prev_hash, entry.payload) != entry.hash:

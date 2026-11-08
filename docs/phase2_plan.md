@@ -1,4 +1,11 @@
-# Phase 2 game plan (crunch mode — deadline Sun 8 Nov 2026, 11:55 PM PKT)
+# Phase 2 game plan (deadline extended to Tue 10 Nov 2026, 11:55 PM PKT)
+
+> **Superseded for current task/file-ownership details:** this plan was written 2026-11-07 for
+> the original ~24h window and the file-ownership table below no longer matches reality (e.g. it
+> assigns `eval/run_system.py` to Areej; Armish built it). Read this for the *rationale* behind
+> the branch split and the interface contract (still accurate), but for Areej's current task
+> list, current file ownership, and current repo state, **use `docs/AREEJ_TASKS.md` instead** —
+> it's kept up to date and is the authoritative one.
 
 Written 2026-11-07 with ~24h left. This is the shared contract between Armish's and Areej's
 work so both can build in parallel on the same repo without blocking each other or colliding

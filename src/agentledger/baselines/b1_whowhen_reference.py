@@ -61,6 +61,8 @@ def run_all_at_once(run: RunLog, provider: LLMProvider) -> B1Prediction:
         parsed = json.loads(raw)
         agent, step = parsed["agent"], int(parsed["step"])
     except Exception:
+        # catches TypeError too (a reply that parses as valid JSON but isn't a dict, e.g. a
+        # bare number, where parsed["agent"] raises "not subscriptable" instead of KeyError).
         agent, step = "unknown", -1
     return B1Prediction(run.run_id, "all_at_once", agent, step, raw)
 
