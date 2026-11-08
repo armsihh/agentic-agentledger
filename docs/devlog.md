@@ -195,3 +195,41 @@ Dated entries, append-only. Each entry: what failed/was missing, what changed, m
   at the time it was written.
 - 44/44 tests still passing (this change only touches the synthetic-data generator and the
   eval script's scored-control list, not any control predicate's code).
+
+## 2026-11-08 — Areej — Gap 2: provenance graph, tamper harness, aggregator, reviewer report
+
+- Built `src/agentledger/provenance.py`: PROV-style links (attributed_to, derived_from, tool call
+  -> input/output digests) stored *inside* each ledger payload so the existing hash chain protects them;
+  `ProvenanceGraph.from_ledger` rebuilds the graph (lineage + consistency checks);
+  `verify_with_anchor` adds an optional external head-hash/length check.
+- Built `eval/run_tamper_test.py` (13 tamper types, 779 cases over 83 clean runs, seed 0, no LLM calls).
+  First run, bare chain: 72.8% detection. Findings: (1) `LedgerEntry.index` isn't hashed, so index-only
+  edits passed (0/43) — fixed in `ledger.verify()` (now 43/43; pre-fix output kept as
+  `results/tamper_results_before_index_fix.json`); (2) truncation of the tail and edit+re-hash attacks are
+  invisible to a bare chain by construction — only the external anchor catches them. Final: chain 78.3%,
+  chain+graph 81.6%, anchored 100.0%, false alarms 0/83, overhead ~0.06 ms/event (target 10 ms).
+- Noted that `eval/run_system.py:_build_ledger` (Armish's) hashes only event_id/agent/tool_calls, not
+  content. Left untouched per file ownership; the harness uses the full-event builder. Worth telling
+  Armish — one-line switch to `build_provenance_ledger` if he wants content covered in E3.
+- Added `src/agentledger/reviewer.py` + `eval/audit_report.py`, `eval/aggregate_results.py`
+  (`results/gap_resolution_table.md`), and `tests/test_provenance.py`. 49 passed, 2 skipped.
+- Honest caveat: synthetic, author-written tampering on 1–5 event logs; the 100% is anchor-dependent.
+
+## 2026-11-08 (later) — Areej — reran Gap 2 tamper test on the real Who&When data
+
+- The first tamper run (above) used only synthetic logs because the real release wasn't on this
+  machine. Cloned `ag2ai/Agents_Failure_Attribution` to a sibling folder (outside the repo) and added
+  `--real-whowhen-root` to `eval/run_tamper_test.py`. Real run: 184 logs, 4,092 events, 6,624 tamper
+  cases: bare chain 75.0%, chain+graph 82.5%, anchored 100.0%, false alarms 0/184, overhead
+  ~0.10 ms/event. Same pattern as synthetic: only the anchor catches truncation and re-hash attacks.
+- `edit_tool_result` is N/A on the real release (no tool calls in its history). The aggregator now
+  prefers `results/tamper_results_real184.json`; synthetic results kept as a secondary check.
+
+## 2026-11-08 (night) — Areej — web UI covering the whole project
+
+- Added `ui/server.py` + `ui/index.html` (stdlib only): Audit tab runs the real `run_system_with_trace`
+  pipeline on any run with the E5 ablation switches and optional injected tampering (tampered ledger ->
+  findings unverified, CTRL-01 fails, graph highlights the broken entry); Tamper lab reruns the Gap 2
+  harness live (184 logs x 3 reproduced 75.0 / 82.5 / 100.0%); Results shows the gap table and Gap 1/2/3
+  numbers from results/*.json; Docs browses all write-ups. Satisfies the brief's "usable interface or
+  reproducible workflow" requirement alongside the existing CLIs.

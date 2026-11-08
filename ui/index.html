@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentLedger</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1a1d23;--mute:#5b6472;--line:#dfe3ea;--accent:#1d4ed8;--ok:#15803d;--bad:#b91c1c;--warn:#b45309;--okbg:#e7f6ec;--badbg:#fdeaea;--warnbg:#fdf3e2;--chip:#eef1f6;
+--agent:#c2410c;--event:#1d4ed8;--toolcall:#7e22ce;--input:#15803d;--output:#0e7490}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--card:#181c24;--ink:#e8ebf0;--mute:#9aa3b2;--line:#2a303b;--accent:#6ea0ff;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--okbg:#123222;--badbg:#3a1618;--warnbg:#3a2a10;--chip:#222836;
+--agent:#fb923c;--event:#7aa7ff;--toolcall:#c58bff;--input:#4ade80;--output:#38bdf8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,Segoe UI,sans-serif}
+header{padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}header span{color:var(--mute)}
+nav{display:flex;gap:4px;padding:0 24px;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;font:inherit;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ink);border-color:var(--accent);font-weight:600}
+main{padding:20px 24px;max-width:1280px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.card h3{margin:0 0 10px;font-size:15px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px}
+select,input[type=number]{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);min-width:130px}
+label.chk{flex-direction:row;align-items:center;gap:6px;color:var(--ink);font-size:13px}
+button.go{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.go:disabled{opacity:.5}
+.banner{padding:10px 14px;border-radius:8px;font-weight:600;margin-bottom:12px}
+.banner.ok{background:var(--okbg);color:var(--ok)}.banner.bad{background:var(--badbg);color:var(--bad)}.banner.warn{background:var(--warnbg);color:var(--warn)}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--mute);font-weight:600}
+td.num{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.bad{background:var(--badbg);color:var(--bad)}.pill.na{background:var(--chip);color:var(--mute)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.events{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.ev{padding:6px 10px;border-bottom:1px solid var(--line);font-size:13px}
+.ev.cited{background:var(--warnbg)}.ev.gt{box-shadow:inset 3px 0 0 var(--bad)}
+.ev b{color:var(--accent)}.ev small{color:var(--mute)}
+.mute{color:var(--mute)}code,pre{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+pre{background:var(--chip);padding:10px;border-radius:8px;overflow:auto;max-height:420px;white-space:pre-wrap}
+.bar{height:14px;border-radius:4px;background:var(--chip);position:relative;min-width:120px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--accent)}
+.legend span{margin-right:12px;font-size:12px}
+svg text{font-family:system-ui,sans-serif}
+details{margin:6px 0}summary{cursor:pointer;font-weight:600}
+.files a{display:inline-block;margin:2px 6px 2px 0;padding:3px 10px;border-radius:99px;background:var(--chip);color:var(--ink);text-decoration:none;font-size:12px;cursor:pointer}
+.files a.on{background:var(--accent);color:#fff}
+.err{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<header><h1>AgentLedger</h1><span>Evidence-bound, tamper-evident, control-mapped auditing of agent logs</span></header>
+<nav id="nav"></nav>
+<main>
+
+<section id="tab-audit">
+ <div class="card">
+  <h3>Audit a run</h3>
+  <div class="row">
+   <label>Data source<select id="source"></select></label>
+   <label>Run<select id="run" style="min-width:260px"></select></label>
+   <label>Model<select id="provider"><option value="mock">Offline mock (no API key)</option><option value="live">Live (needs API key)</option></select></label>
+   <label>Inject tampering<select id="tamper"></select></label>
+   <label>Graph events<input type="number" id="maxev" value="8" min="2" max="40" style="min-width:70px"></label>
+   <label class="chk"><input type="checkbox" id="ver" checked> Verifier</label>
+   <label class="chk"><input type="checkbox" id="pol" checked> Policy Checker</label>
+   <button class="go" id="runbtn">Run audit</button>
+  </div>
+  <p class="mute" id="auditnote" style="margin:8px 0 0">The Verifier / Policy Checker switches are the E5 ablation flags. Offline mock gives instant, deterministic results; its accuracy is not representative.</p>
+ </div>
+ <div id="auditout"></div>
+</section>
+
+<section id="tab-tamper" hidden>
+ <div class="card">
+  <h3>Tamper-injection lab (Gap 2 / E4)</h3>
+  <p class="mute" style="margin-top:0">Applies each tamper type to the chosen logs and checks whether it is detected by (1) the bare hash chain, (2) chain + provenance graph, (3) chain + graph + external anchor. Also verifies untouched ledgers to count false alarms.</p>
+  <div class="row">
+   <label>Data source<select id="tsource"></select></label>
+   <label>Max runs<input type="number" id="tlimit" value="0" min="0" style="min-width:90px"></label>
+   <label>Attempts per run & type<input type="number" id="treps" value="1" min="1" max="10" style="min-width:90px"></label>
+   <button class="go" id="tbtn">Run harness</button>
+  </div>
+  <p class="mute" style="margin:8px 0 0">0 = all runs. All 184 real logs x 3 attempts reproduces the headline result (takes roughly a minute; the button stays disabled while it runs).</p>
+ </div>
+ <div id="tamperout"></div>
+</section>
+
+<section id="tab-results" hidden><div id="resultsout">Loading…</div></section>
+
+<section id="tab-docs" hidden>
+ <div class="card"><h3>Reproduce everything</h3>
+<pre>pip install -e .[dev]
+python -m pytest tests/ -v
+python eval/run_tamper_test.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&amp;When" --reps 3 --out results/tamper_results_real184.json   # E4 Gap 2
+python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&amp;When" --limit 20                                       # E3 (needs a provider key)
+python eval/run_baseline.py / run_b1.py ...                                                                                                         # E1 / E2
+python eval/make_injected_violations.py &amp;&amp; python eval/run_policy_eval.py                                                                           # E4 Gap 3
+python eval/aggregate_results.py                                                                                                                    # gap-resolution table
+python ui/server.py                                                                                                                                 # this UI</pre></div>
+ <div class="card"><h3>Write-ups &amp; data files</h3><div class="files" id="files"></div><pre id="filebody">Pick a file above.</pre></div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=x=>x==null?'—':(x*100).toFixed(1)+'%';
+const get=async u=>{const r=await fetch(u);const t=await r.text();try{return JSON.parse(t)}catch{return t}};
+const post=async(u,b)=>{const r=await fetch(u,{method:'POST',body:JSON.stringify(b)});return r.json()};
+const SRC={sample:'Sample logs (synthetic)',injected:'Injected-violation suite (synthetic, Gap 3)',real:'Real Who&When (184 logs)'};
+let meta;
+
+/* ---------- tabs ---------- */
+const TABS=[['audit','Audit a run'],['tamper','Tamper lab'],['results','Results'],['docs','Docs & reproduce']];
+$('#nav').innerHTML=TABS.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+function show(t){TABS.forEach(([k])=>{$('#tab-'+k).hidden=k!==t});document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));if(t==='results')loadResults();if(t==='docs')loadDocs()}
+$('#nav').onclick=e=>{if(e.target.dataset.t)show(e.target.dataset.t)};
+
+/* ---------- audit ---------- */
+async function init(){
+  try{meta=await get('/api/meta');if(typeof meta!=='object'||!meta.sources)throw new Error('bad response')}catch(e){
+    $('#tab-audit').innerHTML='<div class="card err">Cannot reach the AgentLedger server. This page must be opened through the server, not as a file: run <code>python ui/server.py</code> and open <b>http://127.0.0.1:8000</b>. ('+esc(e.message)+')</div>';return}
+  const opts=Object.entries(meta.sources).filter(([k,n])=>n>0).map(([k,n])=>`<option value="${k}">${SRC[k]} — ${n}</option>`).join('');
+  $('#source').innerHTML=opts;$('#tsource').innerHTML=opts;
+  if(meta.sources.real){$('#source').value='real';$('#tsource').value='real'}
+  else $('#auditnote').innerHTML+=` <b>Real Who&amp;When not found at ${esc(meta.real_root)}</b> — clone it there or start the server with --whowhen-root.`;
+  $('#tamper').innerHTML='<option value="">None (clean ledger)</option>'+meta.tampers.map(t=>`<option value="${t.name}">${t.name} — ${esc(t.desc)}</option>`).join('');
+  if(!meta.live_provider)$('#provider').options[1].text='Live (no API key set — falls back to mock)';
+  await loadRuns();show('audit');
+}
+async function loadRuns(){
+  const runs=await get('/api/runs?source='+$('#source').value);
+  $('#run').innerHTML=runs.map(r=>`<option value="${r.index}">${r.index}: ${esc(r.run_id.slice(0,28))} (${r.events} events)</option>`).join('');
+}
+$('#source').onchange=loadRuns;
+
+function pill(ok){return ok===null||ok===undefined?'<span class="pill na">n/a</span>':ok?'<span class="pill ok">PASS</span>':'<span class="pill bad">FAIL</span>'}
+
+$('#runbtn').onclick=async()=>{
+  const b=$('#runbtn');b.disabled=true;b.textContent='Running…';$('#auditout').innerHTML='';
+  try{
+    const r=await post('/api/audit',{source:$('#source').value,index:+$('#run').value,provider:$('#provider').value,tamper:$('#tamper').value,
+      use_verifier:$('#ver').checked,use_policy_checker:$('#pol').checked,max_events:+$('#maxev').value});
+    $('#auditout').innerHTML=r.error?`<div class="card err">${esc(r.error)}</div>`:renderAudit(r);
+  }catch(e){$('#auditout').innerHTML=`<div class="card err">${esc(e)}</div>`}
+  b.disabled=false;b.textContent='Run audit';
+};
+
+function renderAudit(r){
+  const L=r.ledger,gt=r.ground_truth,att=r.findings.find(f=>f.control_id===null),ctl=r.findings.filter(f=>f.control_id!==null);
+  const cited=new Set(att?att.cited_record_ids:[]);
+  let h='';
+  h+=`<div class="banner ${L.ok?'ok':'bad'}">Ledger integrity: ${L.ok?'INTACT':'TAMPERED'} — ${L.entries} entries, head <code>${L.head.slice(0,16)}…</code>${L.ok?'':' — all findings below are marked unverified (ledger-gated)'}</div>`;
+  if(r.tamper_note)h+=`<div class="banner warn">${esc(r.tamper_note)}</div>`;
+  if(r.provider_note)h+=`<div class="banner warn">${esc(r.provider_note)}</div>`;
+  if(r.detection)h+=`<div class="card"><h3>Was the tampering detected?</h3><table><tr><th>Bare hash chain</th><th>Chain + provenance graph</th><th>Chain + graph + anchor</th></tr><tr>${['chain','chain+graph','anchored'].map(m=>`<td>${r.detection[m]?'<span class="pill ok">DETECTED</span>':'<span class="pill bad">MISSED</span>'}</td>`).join('')}</tr></table><p class="mute" style="margin:8px 0 0">Anchor = head hash and length saved at write time (the part that catches truncation and full re-hash attacks).</p></div>`;
+  h+='<div class="grid2"><div class="card"><h3>Failure attribution (Gap 1)</h3>';
+  if(att){
+    h+=`<p style="margin:0 0 6px"><b>${esc(att.agent)}</b>, step <b>${att.step}</b> ${att.verified?'<span class="pill ok">VERIFIED</span>':'<span class="pill bad">UNVERIFIED — a hypothesis, not evidence</span>'}</p>`;
+    h+=`<p class="mute" style="margin:0 0 6px">Cites: ${att.cited_record_ids.length?att.cited_record_ids.map(c=>`<code>${esc(c.slice(-12))}</code>`).join(', '):'nothing'}</p>`;
+    if(att.rationale)h+=`<p style="margin:0 0 6px">${esc(att.rationale.slice(0,400))}</p>`;
+    if(gt){const hit=att.agent===gt.responsible_agent&&att.step===gt.decisive_step;h+=`<p style="margin:0">Ground truth: <b>${esc(gt.responsible_agent)}</b>, step <b>${gt.decisive_step}</b> — ${att.agent===gt.responsible_agent?'agent correct':'agent wrong'}, ${hit?'step correct':'step wrong'}</p>`}
+  }
+  h+='</div><div class="card"><h3>Control checks (Gap 3)</h3>';
+  h+=ctl.length?`<table><tr><th>Control</th><th>Result</th><th>Evidence</th></tr>${ctl.map(c=>`<tr><td><b>${c.control_id}</b></td><td>${pill(c.passed)}</td><td class="mute">${esc(c.rationale.slice(0,160))}</td></tr>`).join('')}</table>`:'<span class="mute">Policy Checker switched off.</span>';
+  h+='</div></div>';
+  h+=`<div class="card"><h3>Provenance graph with hashes (Gap 2) <span class="mute" style="font-weight:400">— showing ${r.graph.shown} of ${r.graph.total} entries; ${r.graph.stats.nodes??'?'} nodes, ${r.graph.stats.edges??'?'} edges</span></h3>${drawGraph(r.graph)}${r.graph.stats.problems.length?`<p class="err">Graph check: ${esc(r.graph.stats.problems[0])}</p>`:''}</div>`;
+  h+=`<div class="card"><h3>Log (${r.n_events} events${r.n_events>300?', first 300 shown':''})</h3><div class="events">${r.events.map(e=>`<div class="ev ${cited.has(e.id)?'cited':''} ${gt&&e.step===gt.decisive_step?'gt':''}"><b>[${e.step}] ${esc(e.agent)}</b> <small>${cited.has(e.id)?'— cited by the Auditor ':''}${gt&&e.step===gt.decisive_step?'— ground-truth decisive step':''}</small><br>${esc(e.content.slice(0,300))}${e.tool_calls.length?`<br><small>tool calls: ${esc(e.tool_calls.join(', '))}</small>`:''}</div>`).join('')}</div></div>`;
+  h+=`<div class="card"><h3>Agent trajectory log</h3>${r.trajectory.map(t=>`<details><summary>${esc(t.stage)}</summary><pre>${esc(JSON.stringify(t,null,2))}</pre></details>`).join('')}<p class="mute">Model: ${esc(r.provider)} · calls: ${r.provider_stats.call_count}</p></div>`;
+  return h;
+}
+
+function drawGraph(g){
+  const col={agent:'var(--agent)',event:'var(--event)',toolcall:'var(--toolcall)',input:'var(--input)',output:'var(--output)'};
+  const ecol={wasAttributedTo:'var(--agent)',wasDerivedFrom:'var(--event)',wasInformedBy:'var(--toolcall)',used:'var(--input)',wasGeneratedBy:'var(--output)'};
+  const P={};g.nodes.forEach(n=>P[n.id]=n);
+  const W=Math.max(700,...g.nodes.map(n=>n.x+90)),H=Math.max(300,...g.nodes.map(n=>n.y+70));
+  let s=`<div style="overflow:auto"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="min-width:100%">`;
+  g.edges.forEach(e=>{const a=P[e.from],b=P[e.to];const mx=(a.x+b.x)/2,my=(a.y+b.y)/2-(e.rel==='wasDerivedFrom'?32:0);
+    s+=`<path d="M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}" fill="none" stroke="${ecol[e.rel]}" stroke-width="1.5" opacity=".7" ${e.rel==='wasDerivedFrom'?'stroke-dasharray="5 4"':''}/>`});
+  g.nodes.forEach(n=>{const c=n.bad?'var(--bad)':col[n.type],h=28+13*n.sub.length;
+    s+=`<rect x="${n.x-n.w/2}" y="${n.y-14}" width="${n.w}" height="${h}" rx="6" fill="${c}" fill-opacity=".14" stroke="${c}" stroke-width="${n.bad?2:1}"/><text x="${n.x}" y="${n.y+4}" text-anchor="middle" font-size="11" fill="${c}">${esc(n.label)}</text>`;
+    n.sub.forEach((t,i)=>{s+=`<text x="${n.x}" y="${n.y+18+13*i}" text-anchor="middle" font-size="9" font-family="monospace" fill="${/^calc/.test(t)?'var(--bad)':c}">${esc(t)}</text>`})});
+  s+='</svg></div>';
+  s+=`<div class="legend">${Object.entries(col).map(([k,c])=>`<span style="color:${c}">■ ${k}</span>`).join('')}${Object.entries(ecol).map(([k,c])=>`<span style="color:${c}">— ${k}</span>`).join('')}<span style="color:var(--bad)">■ red = first broken entry / hash mismatch</span></div><p class="mute" style="margin:6px 0 0">Each event's <code>prev</code> must equal the previous event's <code>hash</code>; <code>calc</code> appears only when the stored hash no longer matches the recomputed one.</p>`;
+  return s;
+}
+
+/* ---------- tamper lab ---------- */
+$('#tbtn').onclick=async()=>{
+  const b=$('#tbtn');b.disabled=true;b.textContent='Running…';$('#tamperout').innerHTML='';
+  const r=await post('/api/tamper_batch',{source:$('#tsource').value,limit:+$('#tlimit').value,reps:+$('#treps').value});
+  $('#tamperout').innerHTML=r.error?`<div class="card err">${esc(r.error)}</div>`:tamperTables(r,`${r.n_runs} runs, ${r.n_cases} tamper cases`);
+  b.disabled=false;b.textContent='Run harness';
+};
+function cell(k,n){return n?`${k}/${n} <span class="mute">(${Math.round(100*k/n)}%)</span>`:'<span class="mute">N/A</span>'}
+function tamperTables(r,title){
+  const s=r.summary||r.summary_by_mode;const per=r.per_type||r.per_tamper_type;const desc=r.desc||{};
+  const fa=m=>s[m].false_alarms;
+  let h=`<div class="card"><h3>Summary — ${esc(title)}</h3><table><tr><th>Verification mode</th><th>Detection</th><th></th><th>False alarms on clean ledgers</th></tr>`;
+  [['chain','Bare hash chain'],['chain+graph','Chain + provenance graph'],['anchored','Chain + graph + external anchor']].forEach(([m,l])=>{
+    h+=`<tr><td>${l}</td><td class="num"><b>${pct(s[m].detection_rate)}</b></td><td><div class="bar"><i style="width:${s[m].detection_rate*100}%"></i></div></td><td class="num">${fa(m)}</td></tr>`});
+  h+='</table>';
+  if(r.overhead)h+=`<p class="mute" style="margin:8px 0 0">Overhead: ${r.overhead.append_ms_per_event.toFixed(3)} ms/event to append + ${r.overhead.verify_ms_per_event.toFixed(3)} ms/event to verify (target &lt; 10 ms).</p>`;
+  h+='</div><div class="card"><h3>Per tamper type (caught / applied)</h3><table><tr><th>Tamper</th><th>What the attacker does</th><th>Bare chain</th><th>Chain + graph</th><th>Anchored</th></tr>';
+  Object.entries(per).forEach(([t,v])=>{h+=`<tr><td><code>${t}</code></td><td>${esc(desc[t]||'')}</td><td>${cell(v.chain,v.applied)}</td><td>${cell(v['chain+graph'],v.applied)}</td><td>${cell(v.anchored,v.applied)}</td></tr>`});
+  return h+'</table><p class="mute" style="margin:8px 0 0">Truncation and edit-then-re-hash are invisible to a bare chain by construction; only the external anchor catches them.</p></div>';
+}
+
+/* ---------- results ---------- */
+function mdTable(md){
+  const lines=md.split('\n').filter(l=>l.startsWith('|'));if(!lines.length)return '<p class="mute">Run python eval/aggregate_results.py first.</p>';
+  const rows=lines.filter(l=>!/^\|[-| ]+\|$/.test(l)).map(l=>l.slice(1,-1).split('|').map(c=>c.trim()));
+  return `<div style="overflow:auto"><table><tr>${rows[0].map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${rows.slice(1).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table></div>`;
+}
+let resultsLoaded=false;
+async function loadResults(){
+  if(resultsLoaded)return;resultsLoaded=true;
+  const d=await get('/api/results');let h='';
+  h+=`<div class="card"><h3>Gap-resolution table (all three gaps)</h3>${mdTable(d.gap_table_md)}<p class="mute">Generated by <code>eval/aggregate_results.py</code> from results/*.json.</p></div>`;
+  if(d.b0||d.b1||d.system.agent_accuracy!=null){
+    const row=(n,x)=>x?`<tr><td>${n}</td><td class="num">${pct(x.agent_accuracy)}</td><td><div class="bar"><i style="width:${x.agent_accuracy*100}%"></i></div></td><td class="num">${pct(x.step_accuracy)}</td><td><div class="bar"><i style="width:${x.step_accuracy*100}%"></i></div></td></tr>`:'';
+    h+=`<div class="card"><h3>Gap 1 — attribution accuracy (20-log real Who&amp;When subset)</h3><table><tr><th>Method</th><th>Agent acc.</th><th></th><th>Step acc.</th><th></th></tr>${row('E1: B0 single LLM call',d.b0)}${row('E2: B1 all-at-once (base paper)',d.b1)}${row('E3: Auditor + Retriever + Verifier (ours)',d.system)}</table>`;
+    if(d.gap1_ablation){const a=d.gap1_ablation;h+=`<p style="margin-bottom:0"><b>Unsupported-claim rate</b> (the actual Gap 1 target): <b>${pct(a.with_verifier.unsupported_claim_rate)}</b> with the Verifier vs <b>${pct(a.without_verifier.unsupported_claim_rate)}</b> without it (E5 ablation).</p>`}
+    h+='</div>';
+  }
+  if(d.gap3){h+=`<div class="card"><h3>Gap 3 — Policy Checker on the 80-case injected-violation suite</h3><table><tr><th>Control</th><th>Precision</th><th>Recall</th><th>F1</th><th>TP/FP/FN/TN</th></tr>${Object.entries(d.gap3.metrics).map(([k,v])=>`<tr><td>${k}</td><td class="num">${v.precision.toFixed(2)}</td><td class="num">${v.recall.toFixed(2)}</td><td class="num">${v.f1.toFixed(2)}</td><td class="mute">${v.tp}/${v.fp}/${v.fn}/${v.tn}</td></tr>`).join('')}</table><p class="mute" style="margin-bottom:0">Synthetic, rule-based, scored on its own design patterns. Real-data check (CTRL-07 precision 78% / recall 100%): see Docs → gap3_real_violation_validation.md.</p></div>`}
+  if(d.tamper_real)h+=tamperTables(d.tamper_real,`Gap 2 — real Who&When, ${d.tamper_real.n_clean_runs} logs, ${d.tamper_real.n_tamper_cases} tamper cases`).replace('<div class="card"><h3>Summary','<div class="card"><h3>Summary');
+  if(d.system_runs.length){h+=`<div class="card"><h3>Per-run results of the real E3 experiment (n=${d.system_runs.length})</h3><div style="overflow:auto"><table><tr><th>Run</th><th>Predicted</th><th>Ground truth</th><th>Agent</th><th>Step</th><th>Verified</th><th>Controls failed</th></tr>${d.system_runs.map(r=>r.error?`<tr><td><code>${esc(r.run_id.slice(0,12))}</code></td><td colspan="6" class="err">errored: ${esc(r.error.slice(0,80))}</td></tr>`:`<tr><td><code>${esc(r.run_id.slice(0,12))}</code></td><td>${esc(r.predicted_agent)} @ ${r.predicted_step}</td><td>${r.ground_truth?esc(r.ground_truth.responsible_agent)+' @ '+r.ground_truth.decisive_step:''}</td><td>${pill(r.agent_correct)}</td><td>${pill(r.step_correct)}</td><td>${r.verified?'yes':'no'}</td><td class="mute">${r.control_findings.filter(c=>!c.passed).map(c=>c.control_id).join(', ')||'—'}</td></tr>`).join('')}</table></div></div>`}
+  $('#resultsout').innerHTML=h;
+}
+
+/* ---------- docs ---------- */
+let docsLoaded=false;
+async function loadDocs(){
+  if(docsLoaded)return;docsLoaded=true;
+  const f=await get('/api/files');
+  $('#files').innerHTML=f.map(n=>`<a data-f="${n}">${n}</a>`).join('');
+  $('#files').onclick=async e=>{const n=e.target.dataset.f;if(!n)return;
+    document.querySelectorAll('#files a').forEach(a=>a.classList.toggle('on',a===e.target));
+    $('#filebody').textContent=await (await fetch('/api/file?name='+encodeURIComponent(n))).text()};
+}
+init();
+</script>
+</body>
+</html>
