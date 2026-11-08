@@ -224,3 +224,12 @@ Dated entries, append-only. Each entry: what failed/was missing, what changed, m
   ~0.10 ms/event. Same pattern as synthetic: only the anchor catches truncation and re-hash attacks.
 - `edit_tool_result` is N/A on the real release (no tool calls in its history). The aggregator now
   prefers `results/tamper_results_real184.json`; synthetic results kept as a secondary check.
+
+## 2026-11-08 (night) — Areej — web UI covering the whole project
+
+- Added `ui/server.py` + `ui/index.html` (stdlib only): Audit tab runs the real `run_system_with_trace`
+  pipeline on any run with the E5 ablation switches and optional injected tampering (tampered ledger ->
+  findings unverified, CTRL-01 fails, graph highlights the broken entry); Tamper lab reruns the Gap 2
+  harness live (184 logs x 3 reproduced 75.0 / 82.5 / 100.0%); Results shows the gap table and Gap 1/2/3
+  numbers from results/*.json; Docs browses all write-ups. Satisfies the brief's "usable interface or
+  reproducible workflow" requirement alongside the existing CLIs.

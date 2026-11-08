@@ -113,6 +113,8 @@ It has the real Who&When benchmark at `../reference-Agents_Failure_Attribution/W
 
 ## Application interface
 
+**Web UI (whole project in one place):** `python ui/server.py` then open http://127.0.0.1:8000. Stdlib only, no extra install. Tabs: **Audit a run** (full pipeline on any sample/injected/real log, E5 ablation switches, injected tampering, provenance graph with hashes, trajectory log), **Tamper lab** (Gap 2 harness live), **Results** (gap-resolution table, Gap 1/2/3 numbers), **Docs** (every write-up). Works offline with the mock model; pick "live" if `GROQ_API_KEY` / `OPENROUTER_API_KEY` is set. Real Who&When is read from `../reference-Agents_Failure_Attribution/Who&When` (override with `--whowhen-root`).
+
 Every experiment (E1–E6) is run through an argparse CLI in `eval/*.py` (each takes `--help`).
 This is the "reproducible execution workflow" option the brief allows as an alternative to a
 GUI/web app — see "Running it" below for the exact commands.
