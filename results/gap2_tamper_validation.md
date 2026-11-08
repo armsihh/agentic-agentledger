@@ -17,6 +17,29 @@ Overhead: ~0.052 ms/event append + ~0.051 ms/event verify (~0.10 ms total), ~100
 The tamper *injection* is still synthetic (we edit real logs, no real attacker), see caveats below. The
 synthetic-log run (83 short logs) is kept as a secondary check in `tamper_results.json`; its section follows.
 
+
+### Per-tamper-type results (real data: 184 logs, 3 attempts per log per type)
+
+Source: `results/tamper_results_real184.json`. Each cell is caught / applied.
+
+| Tamper check | What the attacker does | Bare chain | Chain + graph | Anchored |
+|---|---|---|---|---|
+| `edit_content` | change a message's text | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `edit_agent` | change which agent wrote an entry | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `edit_tool_result` | forge a tool call's result (N/A on real logs: no tool calls) | N/A | N/A | N/A |
+| `edit_provenance_link` | rewrite a provenance link (attributed_to) | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `edit_last_entry` | edit the final entry | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `delete_middle` | remove an entry from the middle | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `delete_first` | remove the first entry | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `reorder_swap` | swap two adjacent entries | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `insert_forged` | insert a forged entry | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `renumber_only` | change only the entry's index field | 552/552 (100%) | 552/552 (100%) | 552/552 (100%) |
+| `truncate_tail` | delete the last entry (chain still valid) | 0/552 (0%) | 0/552 (0%) | 552/552 (100%) |
+| `edit_rechain` | edit an entry, then recompute every later hash | 0/552 (0%) | 0/552 (0%) | 552/552 (100%) |
+| `delete_rechain` | delete an entry, then recompute every later hash | 0/552 (0%) | 499/552 (90%) | 552/552 (100%) |
+
+Reading the table: nine checks are caught by the bare chain every time (the N/A row isn't counted). The last three (truncation and the two re-hash attacks) are invisible to it by construction; the graph catches some `delete_rechain` cases because a deleted entry leaves a dangling `wasDerivedFrom` link, and only the external anchor catches all of them.
+
 ---
 
 ## Secondary: synthetic logs (sample_logs + injected_violations)
