@@ -169,10 +169,25 @@ class GroqProvider(LLMProvider):
                         messages=[{"role": "user", "content": prompt}],
                     )
                     GroqProvider._last_call_at = time.monotonic()
-                    return response.choices[0].message.content
+                    content = response.choices[0].message.content
+                    if content is None:
+                        # some models return a null content on certain finish reasons (e.g.
+                        # content filtering, or truncation with no text emitted) instead of an
+                        # error -- treat it as a failed attempt on this model rather than
+                        # propagating None up through generate()'s len(text) and crashing the run.
+                        time.sleep(min(2**attempt, 30))
+                        continue
+                    return content
                 except (groq.RateLimitError, groq.APIStatusError) as exc:
                     message = str(exc).lower()
                     if isinstance(exc, groq.APIStatusError) and "rate_limit" not in message:
+                        # a context-length overflow ("reduce the length of the messages") is
+                        # model-specific (each model in the chain has a different context
+                        # window) -- switch models instead of raising immediately, which was
+                        # killing the whole run on logs too long for the current model but
+                        # short enough for another one in the chain.
+                        if "reduce the length" in message or "context" in message:
+                            break
                         raise
                     if "tokens per day" in message or " tpd" in message:
                         break  # daily quota won't clear within any backoff window -- stop retrying, switch models
@@ -292,7 +307,11 @@ class OpenRouterProvider(LLMProvider):
                     with urllib.request.urlopen(req, timeout=60) as resp:
                         result = json.loads(resp.read().decode("utf-8"))
                     OpenRouterProvider._last_call_at = time.monotonic()
-                    return result["choices"][0]["message"]["content"]
+                    content = result["choices"][0]["message"]["content"]
+                    if content is None:
+                        time.sleep(min(2**attempt, 20))
+                        continue
+                    return content
                 except urllib.error.HTTPError as exc:
                     if exc.code == 429:
                         time.sleep(min(2**attempt, 20))
