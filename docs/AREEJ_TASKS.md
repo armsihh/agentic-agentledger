@@ -50,7 +50,7 @@
 
 ```bash
 git fetch origin
-git checkout phase2
+git checkout phase2-armish-gaps1-3
 git pull
 git checkout -b phase2-areej-gap2
 pip install -e .
@@ -58,9 +58,10 @@ pip install -e .[groq]   # or copy .env.example to .env and set GROQ_API_KEY / O
 python -m pytest tests/ -v   # confirm 44/44 passing before you start
 ```
 
-Everything below builds on top of what's on `phase2-armish-gaps1-3` (not yet merged into
-`phase2` — ask Armish whether to branch from his branch directly or wait for a `phase2` merge,
-since `phase2` itself doesn't have his work yet): the normalised schema, ingestion, hash-chain
+**Branch from `phase2-armish-gaps1-3`, not `phase2`.** `phase2` is currently stale — it only has
+an old merge from earlier and is missing everything from Armish's latest commit, including this
+very file in its current form. `phase2-armish-gaps1-3` is confirmed up to date with `origin` and
+has everything below: the normalised schema, ingestion, hash-chain
 ledger, 6 control predicates, and a working `orchestrator.run_system(...)` / `run_system_with_trace(...)`
 you'll call into. Read `src/agentledger/orchestrator.py` for the exact signatures — don't change
 them.
