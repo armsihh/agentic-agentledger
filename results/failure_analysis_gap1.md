@@ -117,18 +117,41 @@ reliably better than the original claim. One bias case (`d1af70ea`) persisted ev
 causal prompt, and a previously stable, fully-correct, verified log (`df6561b2`) flipped to a
 *new* incorrect Computer_terminal claim after revision.
 
-**Implemented but untested: selective causal-judgment Verifier.** The natural next step — apply
-the causal check only to citations naming a tool-execution agent (e.g. `Computer_terminal`),
-leaving reasoning-agent claims on the already-validated lenient prompt, to try to recover the
-coverage loss without losing the precision gain — is implemented
+**Tested fix: selective causal-judgment Verifier — the best configuration found.** The natural
+next step — apply the causal check only to citations naming a tool-execution agent (e.g.
+`Computer_terminal`), leaving reasoning-agent claims on the already-validated lenient prompt, to
+try to recover the coverage loss without losing the precision gain — is implemented
 (`verify(..., causal="selective")` in `src/agentledger/agents/verifier.py`, driven by
 `_cites_tool_execution_agent()`; run with `eval/run_system.py --causal-verifier-mode selective`).
-We attempted to run it live on the same 20 real logs and hit a hard free-tier capacity wall: by
-this point in the day's testing, Groq's quota and **all eight** of OpenRouter's free fallback
-models were simultaneously rate-limited, and every one of the 20 runs errored out with no usable
-model left (`results/system_results_causal_selective.json` — kept for the record, not a
-reportable result; 0/20 evaluated). This is the same capacity ceiling `results/e6_efficiency.md`
-already documents (an n=40 attempt earlier lost 18/40 runs the same way) — a reliability limit,
-not a bug in the fix. The selective mode is real, code-reviewed, and smoke-tested against the
-offline mock provider (`tests/`), just not yet validated against live data; re-run it once quota
-recovers before citing a result for it.
+The first live attempt hit a hard free-tier capacity wall (Groq and all eight of OpenRouter's
+free fallback models simultaneously rate-limited — a reliability limit, the same one
+`results/e6_efficiency.md` documents, not a bug); a retry after quota recovered completed cleanly,
+0 errors, same model as the headline runs (`openai/gpt-oss-120b` after `qwen/qwen3.8-27b`
+fallback — not a different-model confound):
+
+| Mode | Agent acc. | Step acc. | Verified rate | Unsupported-claim rate |
+|---|---|---|---|---|
+| Lenient (current default, `results/system_results.json`) | 35.0% | 10.0% | 60.0% | 50.0% |
+| Causal, every claim (`results/system_results_causal_verifier.json`) | 30.0% | 5.0% | 25.0% | 40.0% |
+| **Causal, selective** (`results/system_results_causal_selective.json`) | **55.0%** | **15.0%** | **75.0%** | **33.3%** (5/15) |
+
+Selective beats both other configurations on every metric, and 55.0% agent accuracy is the first
+result anywhere in this project that beats B1's reproduced 40.0% on raw accuracy. Checked against
+the 5 original Computer_terminal-bias cases specifically: `5d0080cb` and `d1af70ea` are now fully
+correct; `65afbc8a` still guesses `Computer_terminal` but is correctly rejected (`verified=false`)
+instead of falsely verified; `cf106601` and `f2feb6a4` are still wrong but no longer blame the
+terminal specifically. None of the 5 retain the original failure pattern (verified=true, wrong,
+blaming `Computer_terminal`).
+
+**Significance check (same methodology as the main H1 test in `gap_resolution_table_gap1_gap3.md`
+/ the paper's Section 7 and Abstract): neither improvement is statistically significant at n=20.**
+Fisher's exact test on unsupported-claim rate, selective (10/15 correct) vs. the lenient default
+(6/12 correct): p≈0.45. Fisher's exact test on agent accuracy, selective (11/20 correct) vs. B1
+(8/20 correct): p≈0.53. Same test, selective vs. the lenient default (7/20 correct): p≈0.34. This
+is the identical caveat the project already applies to the headline 65.0%→50.0% result (p≈0.47) —
+applying it here too, rather than letting the more exciting number skip the check, is the whole
+point of running it. The usual caveat also applies — this is one run, same as every other n=20
+number in this project — but it is a real, same-model, controlled comparison (only the Verifier's
+prompt-selection logic differs), and it is the strongest configuration found for Gap 1. Worth
+considering as the new default, not just a footnote, but validate at larger n before leaning on
+the "beats B1" framing too hard.

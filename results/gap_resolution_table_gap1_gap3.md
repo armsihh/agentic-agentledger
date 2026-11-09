@@ -30,6 +30,7 @@ to the Verifier change.
 | Gap 1 | E3: Auditor+Retriever+Verifier (ours) | agent / step accuracy | 40.0% / 25.0% | 35.0% / 10.0% | **No** — our system trails the base paper's own method at this sample size |
 | Gap 1 | E3: Auditor+Retriever+Verifier (ours) | **unsupported-claim rate** (the actual Gap 1 target metric — the base paper has no equivalent, since it emits bare labels with no evidence) | n/a — base paper offers no citation mechanism to measure this against | **50.0%** (6/12 verified claims correct) | **Partially** — reduced from the no-verifier baseline, but far short of H1's "<5%" target; 5 of the 6 remaining unsupported claims share one identified cause (Computer_terminal attribution bias, see `failure_analysis_gap1.md`) |
 | Gap 1 | E5 ablation: same pipeline, Verifier removed | unsupported-claim rate | — | 65.0% (13/20 verified-but-wrong) | shows the Verifier still reduces unsupported claims (65.0%→50.0%), just much less than an earlier, smaller-sample pass suggested |
+| Gap 1 | **E8 ablation: selective causal-judgment Verifier** (causal prompt only for citations naming a tool-execution agent) | agent / step accuracy / unsupported-claim rate | 40.0% / 25.0% / n/a | **55.0% / 15.0% / 33.3%** | **Directionally yes, not statistically significant** — beats B1 on agent accuracy (the only configuration in this project to do so) and improves every Gap 1 metric over the default (E3), but Fisher's exact test gives p≈0.53 vs. B1 and p≈0.45 vs. the default — same caveat as the main H1 result (p≈0.47); see `failure_analysis_gap1.md` for per-case detail, the significance check, and the all-claims variant it was chosen over |
 | Gap 3 | Policy Checker (6/12 predicates — CTRL-06 added 2026-11-07) on the injected-violation suite (80 cases) | precision / recall / F1 per control | n/a — no prior system to compare against for this metric | 1.00 / 1.00 / 1.00 (4 of the 6 implemented predicates — CTRL-03/06/07/11 — are scored here; the suite has no cases for CTRL-01/02 since those don't have a natural "planted violation" shape) | **Fully**, but honestly caveated: these are deterministic rule-based predicates scored against the same patterns they were designed to detect (same caveat Phase 1 supervisor feedback raised about injected violations generally) |
 | Gap 3 | same predicates, checked against **real** (non-synthetic) Who&When logs instead | precision / recall per control, where real triggers exist at all | n/a | CTRL-03/CTRL-11: **0/184 real triggers** — no real data to validate against. CTRL-07: real precision/recall **78%/100%** (n=9 hand-labeled, after fixing two real bugs found this way) — see [`results/gap3_real_violation_validation.md`](gap3_real_violation_validation.md) | Confirms the caveat above with real evidence rather than just stating it: synthetic F1=1.00 does **not** describe real-world performance. The real check is weaker but far more defensible. |
 
@@ -76,10 +77,16 @@ bar, down from 100% with no verification at all. The dominant remaining problem 
 but causal judgment: 5 of 6 verified-but-wrong claims blame `Computer_terminal` (the
 tool-execution role) for errors it only reports, because the Verifier checks whether a citation is
 textually error-shaped, not whether the cited agent actually caused the failure. We tested the
-direct fix — a Verifier prompt that judges causation instead of textual support — applied to
-every claim: it helps (unsupported-claim rate 50%→40%, 4/5 bias cases caught) but is not a clean
-win (verified rate collapses 60%→25%). A selective variant (causal judgment only for citations
-naming a tool-execution agent, meant to recover that coverage loss) is implemented and
-smoke-tested but not yet validated live — a free-tier capacity wall (Groq and all 8 OpenRouter
-free models rate-limited simultaneously) blocked the real-data run; see
-`results/failure_analysis_gap1.md` for both the tested and the untested result.
+direct fix — a Verifier prompt that judges causation instead of textual support — three ways.
+Applied to every claim, it helps (unsupported-claim rate 50%→40%, 4/5 bias cases caught) but is
+not a clean win (verified rate collapses 60%→25%, agent accuracy drops to 30%). Applied
+**selectively** — causal judgment only for citations naming a tool-execution agent, lenient
+prompt otherwise — it beats both the default and the all-claims variant on every metric: 55.0%
+agent accuracy (beating B1's reproduced 40.0%, the first result in this project to do so), 15.0%
+step accuracy, 75.0% verified rate, and 33.3% unsupported-claim rate — but, checked with the same
+Fisher's exact test used for the main H1 result (p≈0.47), neither improvement reaches
+significance at n=20 (p≈0.45 vs. the default, p≈0.53 vs. B1). Applying the same rigor to the
+exciting number as to the disappointing one, not just to the latter, is the point. See
+`results/failure_analysis_gap1.md` for the full comparison table, per-case detail, and all three
+significance checks — this is still the strongest configuration found for Gap 1, worth
+considering as the new default, but validate at larger n before leaning hard on "beats B1."

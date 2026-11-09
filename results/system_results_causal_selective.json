@@ -2,117 +2,968 @@
   "use_verifier": true,
   "use_policy_checker": true,
   "causal_verifier_mode": "selective",
-  "agent_accuracy": 0.0,
-  "step_accuracy": 0.0,
-  "verified_rate": 0.0,
+  "agent_accuracy": 0.55,
+  "step_accuracy": 0.15,
+  "verified_rate": 0.75,
   "provider_stats": {
-    "call_count": 0,
-    "total_latency_seconds": 0.0,
-    "avg_latency_seconds": 0.0,
-    "total_chars_in": 0,
-    "total_chars_out": 0,
-    "provider_switches": [
-      "GroqProvider"
-    ],
-    "active_provider": "OpenRouterProvider",
+    "call_count": 58,
+    "total_latency_seconds": 1018.908,
+    "avg_latency_seconds": 17.567,
+    "total_chars_in": 440409,
+    "total_chars_out": 5760,
+    "provider_switches": [],
+    "active_provider": "GroqProvider",
     "active_provider_stats": {
       "call_count": 0,
       "total_latency_seconds": 0.0,
       "avg_latency_seconds": 0.0,
       "total_chars_in": 0,
       "total_chars_out": 0,
-      "model": "nvidia/nemotron-3.5-lightning:free",
+      "model": "openai/gpt-oss-120b",
       "model_switches": [
-        "liquid/lfm-3-1.7b:free",
-        "stealth/crouton-alpha",
-        "recursive/flint-v1.0:free",
-        "xingchen-agi/xing4.0-29b-a4b:free",
-        "nvidia/nemotron-3.5-super-vl:free",
-        "dots-studio/dots-3-note-preview:free",
-        "liquid/lfm-2.5-2.6b:free"
+        "qwen/qwen3.8-27b"
       ]
     }
   },
   "runs": [
     {
       "run_id": "6e3be83d1949fa52cba03fb1ce4b5b3bf7e37a83fd7d67694b10b2e439d90cf8",
-      "error": "'choices'"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 28,
+      "cited_record_ids": [
+        "6e3be83d1949fa52cba03fb1ce4b5b3bf7e37a83fd7d67694b10b2e439d90cf8-28"
+      ],
+      "verified": false,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 12
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=29 events=29 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[28] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "55f4258484c5b398956133128a50462a767da211f8f72aa5ac5bbffb9bcbba1a",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 85,
+      "cited_record_ids": [
+        "55f4258484c5b398956133128a50462a767da211f8f72aa5ac5bbffb9bcbba1a-85"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 4
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=86 events=86 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[8, 38, 65, 85] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "0a65cb96-cb6e-4a6a-8aae-c1084f613456",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 92,
+      "cited_record_ids": [
+        "0a65cb96-cb6e-4a6a-8aae-c1084f613456-92",
+        "0a65cb96-cb6e-4a6a-8aae-c1084f613456-0"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 32
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=93 events=93 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[82, 88, 92] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 16,
+      "cited_record_ids": [
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-14",
+        "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455-16"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 8
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=17 events=17 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "ed58682d-bc52-4baa-9eb0-4eb81e1edacc",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 16,
+      "cited_record_ids": [
+        "ed58682d-bc52-4baa-9eb0-4eb81e1edacc-16"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 12
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=20 events=20 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Orchestrator",
+      "predicted_step": 5,
+      "cited_record_ids": [
+        "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408-5"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Orchestrator",
+        "decisive_step": 5
+      },
+      "agent_correct": true,
+      "step_correct": true,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "a1e91b78-d3d8-4675-bb8d-62741b4b68a6",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Orchestrator",
+      "predicted_step": 22,
+      "cited_record_ids": [
+        "a1e91b78-d3d8-4675-bb8d-62741b4b68a6-23"
+      ],
+      "verified": false,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 8
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=25 events=25 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[8, 24] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "9e31099fffa6a3891c94934fd4fc2f3f522d51c1904ff3561f3a10e4bf245821",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Orchestrator",
+      "predicted_step": 128,
+      "cited_record_ids": [
+        "9e31099fffa6a3891c94934fd4fc2f3f522d51c1904ff3561f3a10e4bf245821-128"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "WebSurfer",
+        "decisive_step": 8
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=129 events=129 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[46, 82, 89, 92, 123] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "e2d69698-bc99-4e85-9880-67eaccd66e6c",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "WebSurfer",
+      "predicted_step": 91,
+      "cited_record_ids": [
+        "e2d69698-bc99-4e85-9880-67eaccd66e6c-91",
+        "e2d69698-bc99-4e85-9880-67eaccd66e6c-93"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Orchestrator",
+        "decisive_step": 25
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=95 events=95 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[12, 24, 26, 52, 75] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "8ad84bd6fe38481ba49e7ad1f6fbd43219a999074e5c6fc940003281f55ec65b",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "unknown",
+      "predicted_step": -1,
+      "cited_record_ids": [],
+      "verified": false,
+      "ground_truth": {
+        "responsible_agent": "Orchestrator",
+        "decisive_step": 9
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=44 events=44 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[16, 20, 31, 32, 39, 40, 43] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "4d51c4bf-4b0e-4f3d-897b-3f6687a7d9f2",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "DataVerification_Expert",
+      "predicted_step": 5,
+      "cited_record_ids": [
+        "4d51c4bf-4b0e-4f3d-897b-3f6687a7d9f2-5"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Excel_Expert",
+        "decisive_step": 0
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=6 events=6 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "cf106601-ab4f-4af9-b045-5295fe67b37d",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "DataAnalysis_Expert",
+      "predicted_step": 6,
+      "cited_record_ids": [
+        "cf106601-ab4f-4af9-b045-5295fe67b37d-6"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Verification_Expert",
+        "decisive_step": 2
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=7 events=7 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "df6561b2-7ee5-4540-baab-5095f742716a",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Verification_Expert",
+      "predicted_step": 4,
+      "cited_record_ids": [
+        "df6561b2-7ee5-4540-baab-5095f742716a-4"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Verification_Expert",
+        "decisive_step": 4
+      },
+      "agent_correct": true,
+      "step_correct": true,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[0, 3] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "f2feb6a4-363c-4c09-a804-0db564eafd68",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Validation_Expert",
+      "predicted_step": 4,
+      "cited_record_ids": [
+        "f2feb6a4-363c-4c09-a804-0db564eafd68-4"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "HawaiiRealEstate_Expert",
+        "decisive_step": 2
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "42d4198c-5895-4f0a-b0c0-424a66465d83",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "unknown",
+      "predicted_step": -1,
+      "cited_record_ids": [],
+      "verified": false,
+      "ground_truth": {
+        "responsible_agent": "DataVerification_Expert",
+        "decisive_step": 3
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=9 events=9 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[3] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "b816bfce-3d80-4913-a07d-69b752ce6377",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Literary_Analysis_Expert",
+      "predicted_step": 5,
+      "cited_record_ids": [
+        "b816bfce-3d80-4913-a07d-69b752ce6377-5"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Literary_Analysis_Expert",
+        "decisive_step": 1
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=8 events=8 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "5d0080cb-90d7-4712-bc33-848150e917d3",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "ScientificPaperAnalysis_Expert",
+      "predicted_step": 9,
+      "cited_record_ids": [
+        "5d0080cb-90d7-4712-bc33-848150e917d3-9"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "ScientificPaperAnalysis_Expert",
+        "decisive_step": 5
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=10 events=10 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": false,
+          "rationale": "error_steps=[7, 8] corrective_action_found_at_or_after=False"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "65afbc8a-89ca-4ad5-8d62-355bb401f61d",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Computer_terminal",
+      "predicted_step": 1,
+      "cited_record_ids": [
+        "65afbc8a-89ca-4ad5-8d62-355bb401f61d-1"
+      ],
+      "verified": false,
+      "ground_truth": {
+        "responsible_agent": "AlgorithmDesign_Expert",
+        "decisive_step": 4
+      },
+      "agent_correct": false,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=10 events=10 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[0, 1, 2, 4, 6] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "e142056d-56ab-4352-b091-b56054bd1359",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "GameTheory_Expert",
+      "predicted_step": 1,
+      "cited_record_ids": [
+        "e142056d-56ab-4352-b091-b56054bd1359-1"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "GameTheory_Expert",
+        "decisive_step": 1
+      },
+      "agent_correct": true,
+      "step_correct": true,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=5 events=5 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "no error step detected; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     },
     {
       "run_id": "d1af70ea-a9a4-421a-b9cc-94b5e02f1788",
-      "error": "OpenRouterProvider: no usable model left (tried ['liquid/lfm-3-1.7b:free', 'stealth/crouton-alpha', 'recursive/flint-v1.0:free', 'xingchen-agi/xing4.0-29b-a4b:free', 'nvidia/nemotron-3.5-super-vl:free', 'dots-studio/dots-3-note-preview:free', 'liquid/lfm-2.5-2.6b:free', 'nvidia/nemotron-3.5-lightning:free']); all rate-limited"
+      "predicted_agent": "Validation_Expert",
+      "predicted_step": 0,
+      "cited_record_ids": [
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-0"
+      ],
+      "verified": true,
+      "ground_truth": {
+        "responsible_agent": "Validation_Expert",
+        "decisive_step": 5
+      },
+      "agent_correct": true,
+      "step_correct": false,
+      "control_findings": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "rationale": "ledger_entries=10 events=10 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "rationale": "tool_calls=[] missing_from_ledger=[]"
+        },
+        {
+          "control_id": "CTRL-03",
+          "passed": true,
+          "rationale": "all high-risk tool calls had a prior approval signal"
+        },
+        {
+          "control_id": "CTRL-06",
+          "passed": true,
+          "rationale": "no tool calls in this run; vacuously satisfied"
+        },
+        {
+          "control_id": "CTRL-07",
+          "passed": true,
+          "rationale": "error_steps=[6, 7] corrective_action_found_at_or_after=True"
+        },
+        {
+          "control_id": "CTRL-11",
+          "passed": true,
+          "rationale": "no sensitive-looking argument keys found in any tool call"
+        }
+      ]
     }
   ]
 }
