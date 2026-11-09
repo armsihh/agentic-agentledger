@@ -1,6 +1,6 @@
 # Gap 3 validation against real (non-synthetic) data
 
-The injected-violation suite (`results/e5_ablation_gap3.md`) scores CTRL-03/07/11 at a clean
+The injected-violation suite (`results/e5_ablation_gap3.md`) scores CTRL-03/06/07/11 at a clean
 1.00/1.00/1.00 — but, as already flagged there, that's deterministic rules scored against the
 exact patterns they were designed to detect. This write-up is the real-data check that finding
 needed: does any of this hold up against genuine agent logs, not planted cases? Short answer:
@@ -11,20 +11,32 @@ for each control's trigger condition; where real triggers exist, hand-labeled a 
 random sample (`random.seed(42)`) against genuine human judgment of "did this actually happen,"
 not the predicate's own output.
 
-## CTRL-03 and CTRL-11: zero real triggers
+## CTRL-03, CTRL-06 and CTRL-11: zero real triggers
 
 ```
 runs with a high-risk tool call (CTRL-03 trigger):        0 / 184
+runs with any recorded tool call at all (CTRL-06 trigger): 0 / 184
 runs with a sensitive-looking arg key (CTRL-11 trigger):  0 / 184
 ```
 
-Neither control's trigger condition occurs *once* across the real benchmark — these Who&When
-tasks are reasoning/search/code tasks, not ones that call `delete`/`pay`/`transfer`-style tools
-or pass password-shaped arguments. **These two predicates can only be meaningfully evaluated on
-the synthetic injected-violation suite; there is no real data to validate them against in this
-benchmark at all.** That's a real limitation of the *benchmark* for this purpose, not a flaw we
-can fix by trying harder — worth stating plainly in Limitations rather than implying both
-controls got the same kind of real-world check CTRL-07 did.
+**Updated 2026-11-09:** CTRL-06 belongs in this group, not the "not yet validated" bucket an
+earlier pass of this document put it in. Verified directly: `load_whowhen_release_full` loads
+all 184 real logs with `tool_calls=[]` on every event (`src/agentledger/ingestion.py`,
+`load_whowhen_release_record`), and the raw release JSON confirms why — each `history` turn has
+only `{content, role, name}`, no structured tool-call field at all; what look like tool outputs
+in the transcripts (`Computer_terminal`'s `"exitcode: 0 (execution succeeded) ..."` messages) are
+free-text `content` from a turn, not a `ToolCall` object. This is a real property of the Who&When
+release format, not a loader bug or an oversight: there is no structured tool-call data in this
+benchmark to parse at all.
+
+None of CTRL-03, CTRL-06 or CTRL-11's trigger conditions occur *once* across the real benchmark —
+all three predicates test facts about structured tool calls (a high-risk tool name, a missing
+recorded result, a sensitive argument key), and Who&When simply doesn't carry that structure.
+**These three predicates can only be meaningfully evaluated on the synthetic injected-violation
+suite; there is no real data to validate them against in this benchmark at all.** That's a real
+limitation of the *benchmark* for this purpose, not a flaw we can fix by trying harder — worth
+stating plainly in Limitations rather than implying any of the three got the same kind of
+real-world check CTRL-07 did.
 
 ## CTRL-07: 145/184 real logs trigger it — and a real bug was found
 
@@ -112,8 +124,10 @@ of finding as the Gap 1 Verifier's own precision/recall trade-off elsewhere in t
 ## Takeaway for the paper
 
 Don't carry the synthetic suite's 1.00/1.00/1.00 into the paper as if it describes real-world
-performance. The honest version: CTRL-03/CTRL-11 have **no real data in this benchmark to
-validate against at all**; CTRL-07, checked against real logs, found and fixed two real bugs
-(recall 71%→100%) at a small precision cost (83%→78%), plus a measurable false-positive source
-from the benchmark's own generation framework (13/184 runs) that's now filtered out. That's a
-weaker-sounding headline than F1=1.00, and a far more defensible one.
+performance. The honest version: CTRL-03/CTRL-06/CTRL-11 have **no real data in this benchmark to
+validate against at all** — Who&When's release format has no structured tool-call field, so none
+of the three tool-call-dependent predicates can ever trigger on it; CTRL-07, the one predicate
+that reasons over free text rather than tool-call structure, is checked against real logs, found
+and fixed two real bugs (recall 71%→100%) at a small precision cost (83%→78%), plus a measurable
+false-positive source from the benchmark's own generation framework (13/184 runs) that's now
+filtered out. That's a weaker-sounding headline than F1=1.00, and a far more defensible one.

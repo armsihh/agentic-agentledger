@@ -43,6 +43,7 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--no-verifier", action="store_true")
     parser.add_argument("--no-policy-checker", action="store_true")
+    parser.add_argument("--causal-verifier", action="store_true", help="use the causal-judgment Verifier prompt (tests whether the cited agent actually caused the failure, not just whether the citation is error-shaped) instead of the default relevance-check prompt")
     parser.add_argument("--out", default="results/system_results.json")
     parser.add_argument("--trajectory-dir", default="logs", help="per-run step-by-step trace output (observability); pass '' to skip writing")
     args = parser.parse_args()
@@ -71,7 +72,8 @@ def main() -> None:
         ledger = _build_ledger(run)
         try:
             findings, trajectory = run_system_with_trace(
-                run, provider, ledger, use_verifier=use_verifier, use_policy_checker=use_policy_checker
+                run, provider, ledger, use_verifier=use_verifier, use_policy_checker=use_policy_checker,
+                causal_verifier=args.causal_verifier,
             )
         except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
             errors += 1
@@ -133,6 +135,7 @@ def main() -> None:
             {
                 "use_verifier": use_verifier,
                 "use_policy_checker": use_policy_checker,
+                "causal_verifier": args.causal_verifier,
                 "agent_accuracy": agent_acc,
                 "step_accuracy": step_acc,
                 "verified_rate": verified_rate,

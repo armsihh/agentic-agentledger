@@ -1,38 +1,64 @@
 {
   "n_sample": 20,
-  "evaluation_note": "20-log subset of real Who&When (10 Hand-Crafted + 10 Algorithm-Generated); full 184-log run deferred, see docs/devlog.md",
+  "evaluation_note": "rerun with fixed fallback chain, n=20/20 both conditions",
   "with_verifier": {
-    "agent_accuracy": 0.4,
-    "step_accuracy": 0.2,
-    "verified_rate": 0.05,
-    "n_evaluated": 19,
-    "n_errored": 1,
-    "grounded_correct_count": 1,
-    "verified_total": 1,
-    "unsupported_claim_rate": 0.0,
+    "agent_accuracy": 0.35,
+    "step_accuracy": 0.1,
+    "verified_rate": 0.6,
+    "n_evaluated": 20,
+    "n_errored": 0,
+    "grounded_correct_count": 6,
+    "verified_total": 12,
+    "unsupported_claim_rate": 0.5,
     "provider_stats": {
-      "call_count": 67,
-      "total_latency_seconds": 1114.595,
-      "avg_latency_seconds": 16.636,
-      "total_chars_in": 505377,
-      "total_chars_out": 8361
+      "call_count": 52,
+      "total_latency_seconds": 998.339,
+      "avg_latency_seconds": 19.199,
+      "total_chars_in": 463290,
+      "total_chars_out": 6969,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-120b",
+        "model_switches": [
+          "qwen/qwen3.8-27b"
+        ]
+      }
     }
   },
   "without_verifier": {
     "agent_accuracy": 0.35,
-    "step_accuracy": 0.05,
-    "verified_rate": 0.8,
-    "n_evaluated": 16,
-    "n_errored": 4,
+    "step_accuracy": 0.1,
+    "verified_rate": 1.0,
+    "n_evaluated": 20,
+    "n_errored": 0,
     "grounded_correct_count": 7,
-    "verified_total": 16,
-    "unsupported_claim_rate": 0.5625,
+    "verified_total": 20,
+    "unsupported_claim_rate": 0.65,
     "provider_stats": {
-      "call_count": 16,
-      "total_latency_seconds": 338.454,
-      "avg_latency_seconds": 21.153,
-      "total_chars_in": 179209,
-      "total_chars_out": 3942
+      "call_count": 20,
+      "total_latency_seconds": 551.207,
+      "avg_latency_seconds": 27.56,
+      "total_chars_in": 232985,
+      "total_chars_out": 4180,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-120b",
+        "model_switches": [
+          "qwen/qwen3.8-27b"
+        ]
+      }
     }
   }
 }

@@ -32,6 +32,7 @@ def _run_system_impl(
     ledger: IntegrityLedger,
     use_verifier: bool,
     use_policy_checker: bool,
+    causal_verifier: bool = False,
 ) -> tuple[list[AuditFinding], list[dict]]:
     """shared implementation. returns (findings, trajectory) -- trajectory is the step-by-step
     observability log (retrieval -> propose -> verify -> [revise -> re-verify] -> policy checks)
@@ -54,7 +55,7 @@ def _run_system_impl(
     )
 
     if use_verifier:
-        result = verifier.verify(run, provider, claim)
+        result = verifier.verify(run, provider, claim, causal=causal_verifier)
         trajectory.append(
             {"stage": "verifier_check", "raw_response": result.raw_response, "verified": result.verified,
              "reason": result.reason}
@@ -65,7 +66,7 @@ def _run_system_impl(
                 {"stage": "auditor_revise", "raw_response": revised.raw_response, "agent": revised.agent,
                  "step": revised.step, "cited_record_ids": revised.cited_record_ids, "rationale": revised.rationale}
             )
-            revised_result = verifier.verify(run, provider, revised)
+            revised_result = verifier.verify(run, provider, revised, causal=causal_verifier)
             trajectory.append(
                 {"stage": "verifier_recheck", "raw_response": revised_result.raw_response,
                  "verified": revised_result.verified, "reason": revised_result.reason}
@@ -118,8 +119,9 @@ def run_system(
     *,
     use_verifier: bool = True,
     use_policy_checker: bool = True,
+    causal_verifier: bool = False,
 ) -> list[AuditFinding]:
-    findings, _trajectory = _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker)
+    findings, _trajectory = _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker, causal_verifier)
     return findings
 
 
@@ -130,7 +132,8 @@ def run_system_with_trace(
     *,
     use_verifier: bool = True,
     use_policy_checker: bool = True,
+    causal_verifier: bool = False,
 ) -> tuple[list[AuditFinding], list[dict]]:
     """same as run_system(), plus the full step-by-step trajectory log (see
     `_run_system_impl`'s docstring). Used by `eval/run_system.py` to populate `logs/`."""
-    return _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker)
+    return _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker, causal_verifier)

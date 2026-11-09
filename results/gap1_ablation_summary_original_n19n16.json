@@ -1,0 +1,38 @@
+{
+  "n_sample": 20,
+  "evaluation_note": "20-log subset of real Who&When (10 Hand-Crafted + 10 Algorithm-Generated); full 184-log run deferred, see docs/devlog.md",
+  "with_verifier": {
+    "agent_accuracy": 0.4,
+    "step_accuracy": 0.2,
+    "verified_rate": 0.05,
+    "n_evaluated": 19,
+    "n_errored": 1,
+    "grounded_correct_count": 1,
+    "verified_total": 1,
+    "unsupported_claim_rate": 0.0,
+    "provider_stats": {
+      "call_count": 67,
+      "total_latency_seconds": 1114.595,
+      "avg_latency_seconds": 16.636,
+      "total_chars_in": 505377,
+      "total_chars_out": 8361
+    }
+  },
+  "without_verifier": {
+    "agent_accuracy": 0.35,
+    "step_accuracy": 0.05,
+    "verified_rate": 0.8,
+    "n_evaluated": 16,
+    "n_errored": 4,
+    "grounded_correct_count": 7,
+    "verified_total": 16,
+    "unsupported_claim_rate": 0.5625,
+    "provider_stats": {
+      "call_count": 16,
+      "total_latency_seconds": 338.454,
+      "avg_latency_seconds": 21.153,
+      "total_chars_in": 179209,
+      "total_chars_out": 3942
+    }
+  }
+}

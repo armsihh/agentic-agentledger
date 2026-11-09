@@ -8,13 +8,27 @@ see `provider_stats.model_switches` in each results file). **This is a 20-run su
 full 184-log benchmark** — the full run is deferred (see `docs/devlog.md`, 2026-11-07 entries);
 treat these as directional, not final, numbers. Gap 2's row is Areej's to fill in.
 
+**Reproducibility note:** this table reflects a clean, evenly-paired rerun (20/20 runs, zero
+errors, both the Verifier-on and Verifier-off conditions). An earlier pass produced a 0.0%/56.3%
+unsupported-claim split instead of the 50.0%/65.0% below — archived as
+`results/system_results_original_n19.json` / `results/system_results_noverifier_original_n16.json`
+— evaluated over an uneven 19/16 sample after transient free-tier rate-limit errors, **and with a
+stricter Verifier prompt** than the one in `src/agentledger/agents/verifier.py` today. The Verifier
+was recalibrated (commit `219f5e7`, "require the cited records to be relevant and consistent"
+rather than "prove the claim") specifically because that first pass showed poor recall, but the
+recalibration was never run against live data until the rerun below — so most of this swing is a
+real, intended effect of that change, not sampling noise. See `results/failure_analysis_gap1.md`
+for the mechanism (a systematic Computer_terminal attribution bias) that explains most of the
+remaining 50.0%, and for the one genuine case of run-to-run sampling variance that is unrelated
+to the Verifier change.
+
 | Gap | Method / component | Metric | Base paper result (E2, reproduced) | Our result (E3) | Addressed? |
 |---|---|---|---|---|---|
 | — | E1: B0 (single LLM call) | agent / step accuracy | — | 50.0% / 5.0% | (baseline, not a gap) |
 | Gap 1 | E2: B1 all_at_once (base paper method, reproduced on our data) | agent / step accuracy | 40.0% / 25.0% | — | — |
-| Gap 1 | E3: Auditor+Retriever+Verifier (ours) | agent / step accuracy | 40.0% / 25.0% | 40.0% / 20.0% | **Partially** — accuracy is roughly on par with the base paper's own method at this sample size, not a clear win |
-| Gap 1 | E3: Auditor+Retriever+Verifier (ours) | **unsupported-claim rate** (the actual Gap 1 target metric — the base paper has no equivalent, since it emits bare labels with no evidence) | n/a — base paper offers no citation mechanism to measure this against | **0.0%** (1/1 verified claims correct) | **Fully** — H1's "<5% unsupported claims" target is met (beaten) on verified claims |
-| Gap 1 | E5 ablation: same pipeline, Verifier removed | unsupported-claim rate | — | 56.3% (9/16 verified-but-wrong) | shows the Verifier, not just citing records, is what drives the Gap 1 improvement |
+| Gap 1 | E3: Auditor+Retriever+Verifier (ours) | agent / step accuracy | 40.0% / 25.0% | 35.0% / 10.0% | **No** — our system trails the base paper's own method at this sample size |
+| Gap 1 | E3: Auditor+Retriever+Verifier (ours) | **unsupported-claim rate** (the actual Gap 1 target metric — the base paper has no equivalent, since it emits bare labels with no evidence) | n/a — base paper offers no citation mechanism to measure this against | **50.0%** (6/12 verified claims correct) | **Partially** — reduced from the no-verifier baseline, but far short of H1's "<5%" target; 5 of the 6 remaining unsupported claims share one identified cause (Computer_terminal attribution bias, see `failure_analysis_gap1.md`) |
+| Gap 1 | E5 ablation: same pipeline, Verifier removed | unsupported-claim rate | — | 65.0% (13/20 verified-but-wrong) | shows the Verifier still reduces unsupported claims (65.0%→50.0%), just much less than an earlier, smaller-sample pass suggested |
 | Gap 3 | Policy Checker (6/12 predicates — CTRL-06 added 2026-11-07) on the injected-violation suite (80 cases) | precision / recall / F1 per control | n/a — no prior system to compare against for this metric | 1.00 / 1.00 / 1.00 (4 of the 6 implemented predicates — CTRL-03/06/07/11 — are scored here; the suite has no cases for CTRL-01/02 since those don't have a natural "planted violation" shape) | **Fully**, but honestly caveated: these are deterministic rule-based predicates scored against the same patterns they were designed to detect (same caveat Phase 1 supervisor feedback raised about injected violations generally) |
 | Gap 3 | same predicates, checked against **real** (non-synthetic) Who&When logs instead | precision / recall per control, where real triggers exist at all | n/a | CTRL-03/CTRL-11: **0/184 real triggers** — no real data to validate against. CTRL-07: real precision/recall **78%/100%** (n=9 hand-labeled, after fixing two real bugs found this way) — see [`results/gap3_real_violation_validation.md`](gap3_real_violation_validation.md) | Confirms the caveat above with real evidence rather than just stating it: synthetic F1=1.00 does **not** describe real-world performance. The real check is weaker but far more defensible. |
 
@@ -40,11 +54,15 @@ python eval/run_policy_eval.py
 
 ## Honest summary for the paper
 
-Raw agent/step accuracy is **not** where our system clearly beats the base paper's own method at
-n=20 — that's worth stating plainly rather than hiding. What the system adds that the base paper
-structurally cannot offer is a measurable **evidence-trust signal**: when it says a finding is
-verified, it's right 100% of the time in this sample (vs. 44% right when verification is skipped),
-directly testing Phase 1's H1 hypothesis. The cost is coverage — only ~5% of claims clear the
-Verifier's bar, which is itself useful material for the Limitations/Future Work section (the
-Verifier's threshold could likely be relaxed without losing much precision; untested here due to
-time).
+Raw agent/step accuracy is **not** where our system beats the base paper's own method at n=20 —
+our system actually trails it (35.0%/10.0% vs. 40.0%/25.0%), and that's worth stating plainly
+rather than hiding. What the system adds that the base paper structurally cannot offer is a
+measurable **evidence-trust signal**: when it says a finding is verified, it's right 50.0% of the
+time in this sample (vs. 35.0% right when verification is skipped) — a real but modest
+improvement, not the clean win a smaller, earlier pass of this experiment suggested. The cost is
+coverage — only 60% of claims clear the Verifier's bar, down from 100% with no verification at
+all. The dominant remaining problem is not coverage but causal judgment: 5 of 6 verified-but-wrong
+claims blame `Computer_terminal` (the tool-execution role) for errors it only reports, because the
+Verifier checks whether a citation is textually error-shaped, not whether the cited agent actually
+caused the failure. Useful material for Limitations/Future Work: a verification prompt that asks
+the Verifier to judge causation, not just textual support, is untested here due to time.
