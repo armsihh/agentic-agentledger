@@ -32,7 +32,7 @@ def _run_system_impl(
     ledger: IntegrityLedger,
     use_verifier: bool,
     use_policy_checker: bool,
-    causal_verifier: bool = False,
+    causal_verifier: bool | str = False,
 ) -> tuple[list[AuditFinding], list[dict]]:
     """shared implementation. returns (findings, trajectory) -- trajectory is the step-by-step
     observability log (retrieval -> propose -> verify -> [revise -> re-verify] -> policy checks)
@@ -119,7 +119,7 @@ def run_system(
     *,
     use_verifier: bool = True,
     use_policy_checker: bool = True,
-    causal_verifier: bool = False,
+    causal_verifier: bool | str = False,
 ) -> list[AuditFinding]:
     findings, _trajectory = _run_system_impl(run, provider, ledger, use_verifier, use_policy_checker, causal_verifier)
     return findings
@@ -132,7 +132,7 @@ def run_system_with_trace(
     *,
     use_verifier: bool = True,
     use_policy_checker: bool = True,
-    causal_verifier: bool = False,
+    causal_verifier: bool | str = False,
 ) -> tuple[list[AuditFinding], list[dict]]:
     """same as run_system(), plus the full step-by-step trajectory log (see
     `_run_system_impl`'s docstring). Used by `eval/run_system.py` to populate `logs/`."""

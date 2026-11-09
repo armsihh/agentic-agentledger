@@ -115,6 +115,20 @@ from 12/20), agent accuracy fell from 35% to 30% and step accuracy from 10% to 5
 stricter prompt triggers the Auditor's revision loop far more often and a revision is not
 reliably better than the original claim. One bias case (`d1af70ea`) persisted even under the
 causal prompt, and a previously stable, fully-correct, verified log (`df6561b2`) flipped to a
-*new* incorrect Computer_terminal claim after revision. Future work: apply the causal check
-selectively (e.g. only to citations of tool-execution steps) rather than to every claim, to try
-to recover the coverage loss without losing the precision gain.
+*new* incorrect Computer_terminal claim after revision.
+
+**Implemented but untested: selective causal-judgment Verifier.** The natural next step — apply
+the causal check only to citations naming a tool-execution agent (e.g. `Computer_terminal`),
+leaving reasoning-agent claims on the already-validated lenient prompt, to try to recover the
+coverage loss without losing the precision gain — is implemented
+(`verify(..., causal="selective")` in `src/agentledger/agents/verifier.py`, driven by
+`_cites_tool_execution_agent()`; run with `eval/run_system.py --causal-verifier-mode selective`).
+We attempted to run it live on the same 20 real logs and hit a hard free-tier capacity wall: by
+this point in the day's testing, Groq's quota and **all eight** of OpenRouter's free fallback
+models were simultaneously rate-limited, and every one of the 20 runs errored out with no usable
+model left (`results/system_results_causal_selective.json` — kept for the record, not a
+reportable result; 0/20 evaluated). This is the same capacity ceiling `results/e6_efficiency.md`
+already documents (an n=40 attempt earlier lost 18/40 runs the same way) — a reliability limit,
+not a bug in the fix. The selective mode is real, code-reviewed, and smoke-tested against the
+offline mock provider (`tests/`), just not yet validated against live data; re-run it once quota
+recovers before citing a result for it.

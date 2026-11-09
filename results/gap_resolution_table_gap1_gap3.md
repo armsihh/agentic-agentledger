@@ -24,7 +24,8 @@ to the Verifier change.
 
 | Gap | Method / component | Metric | Base paper result (E2, reproduced) | Our result (E3) | Addressed? |
 |---|---|---|---|---|---|
-| — | E1: B0 (single LLM call) | agent / step accuracy | — | 50.0% / 5.0% | (baseline, not a gap) |
+| — | E1: B0 (single LLM call, whole log) | agent / step accuracy | — | 50.0% / 5.0% | (baseline, not a gap) |
+| — | B2: non-agentic RAG audit (retrieve once, summarise once — no Verifier, ledger gate or Policy Checker) | agent / step accuracy | — | 25.0% / 0.0% (n=19, 1 run errored) | (baseline, not a gap — isolates what retrieval alone buys vs. B0, and what the Verifier/revision loop then buys vs. E3) |
 | Gap 1 | E2: B1 all_at_once (base paper method, reproduced on our data) | agent / step accuracy | 40.0% / 25.0% | — | — |
 | Gap 1 | E3: Auditor+Retriever+Verifier (ours) | agent / step accuracy | 40.0% / 25.0% | 35.0% / 10.0% | **No** — our system trails the base paper's own method at this sample size |
 | Gap 1 | E3: Auditor+Retriever+Verifier (ours) | **unsupported-claim rate** (the actual Gap 1 target metric — the base paper has no equivalent, since it emits bare labels with no evidence) | n/a — base paper offers no citation mechanism to measure this against | **50.0%** (6/12 verified claims correct) | **Partially** — reduced from the no-verifier baseline, but far short of H1's "<5%" target; 5 of the 6 remaining unsupported claims share one identified cause (Computer_terminal attribution bias, see `failure_analysis_gap1.md`) |
@@ -41,11 +42,18 @@ python eval/run_baseline.py --real-whowhen-root "../reference-Agents_Failure_Att
 # E2 (B1, base paper method)
 python eval/run_b1.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --method all_at_once --out results/baseline_b1_real20_allatonce.json
 
+# B2 (non-agentic RAG audit)
+python eval/run_b2.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --out results/baseline_b2_real20.json
+
 # E3 (our system)
 python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --out results/system_results.json
 
 # E5 ablation (no verifier)
 python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --no-verifier --out results/system_results_noverifier.json
+
+# Causal-Verifier ablations (tests the fix for the Computer_terminal bias below)
+python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --causal-verifier-mode all --out results/system_results_causal_verifier.json
+python eval/run_system.py --real-whowhen-root "../reference-Agents_Failure_Attribution/Who&When" --limit 20 --causal-verifier-mode selective --out results/system_results_causal_selective.json
 
 # E4/Gap 3 (injected-violation suite)
 python eval/make_injected_violations.py
@@ -56,13 +64,22 @@ python eval/run_policy_eval.py
 
 Raw agent/step accuracy is **not** where our system beats the base paper's own method at n=20 —
 our system actually trails it (35.0%/10.0% vs. 40.0%/25.0%), and that's worth stating plainly
-rather than hiding. What the system adds that the base paper structurally cannot offer is a
-measurable **evidence-trust signal**: when it says a finding is verified, it's right 50.0% of the
-time in this sample (vs. 35.0% right when verification is skipped) — a real but modest
-improvement, not the clean win a smaller, earlier pass of this experiment suggested. The cost is
-coverage — only 60% of claims clear the Verifier's bar, down from 100% with no verification at
-all. The dominant remaining problem is not coverage but causal judgment: 5 of 6 verified-but-wrong
-claims blame `Computer_terminal` (the tool-execution role) for errors it only reports, because the
-Verifier checks whether a citation is textually error-shaped, not whether the cited agent actually
-caused the failure. Useful material for Limitations/Future Work: a verification prompt that asks
-the Verifier to judge causation, not just textual support, is untested here due to time.
+rather than hiding. Retrieval alone (B2, no Verifier/ledger-gate/Policy Checker) scores even lower
+(25.0%/0.0%) than either B0 (whole-log, 50.0%/5.0%) or E3 — a short candidate shortlist without
+citation discipline or verification is not obviously better than reading the whole log, which is
+itself useful material for the paper rather than an inconvenient number to omit. What the system
+adds that neither baseline structurally can offer is a measurable **evidence-trust signal**: when
+E3 says a finding is verified, it's right 50.0% of the time in this sample (vs. 35.0% right when
+verification is skipped) — a real but modest improvement, not the clean win a smaller, earlier
+pass of this experiment suggested. The cost is coverage — only 60% of claims clear the Verifier's
+bar, down from 100% with no verification at all. The dominant remaining problem is not coverage
+but causal judgment: 5 of 6 verified-but-wrong claims blame `Computer_terminal` (the
+tool-execution role) for errors it only reports, because the Verifier checks whether a citation is
+textually error-shaped, not whether the cited agent actually caused the failure. We tested the
+direct fix — a Verifier prompt that judges causation instead of textual support — applied to
+every claim: it helps (unsupported-claim rate 50%→40%, 4/5 bias cases caught) but is not a clean
+win (verified rate collapses 60%→25%). A selective variant (causal judgment only for citations
+naming a tool-execution agent, meant to recover that coverage loss) is implemented and
+smoke-tested but not yet validated live — a free-tier capacity wall (Groq and all 8 OpenRouter
+free models rate-limited simultaneously) blocked the real-data run; see
+`results/failure_analysis_gap1.md` for both the tested and the untested result.

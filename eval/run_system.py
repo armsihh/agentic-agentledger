@@ -43,7 +43,14 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--no-verifier", action="store_true")
     parser.add_argument("--no-policy-checker", action="store_true")
-    parser.add_argument("--causal-verifier", action="store_true", help="use the causal-judgment Verifier prompt (tests whether the cited agent actually caused the failure, not just whether the citation is error-shaped) instead of the default relevance-check prompt")
+    parser.add_argument(
+        "--causal-verifier-mode", choices=["off", "all", "selective"], default="off",
+        help="'off' (default): lenient relevance-check Verifier prompt. 'all': causal-judgment "
+             "prompt (tests whether the cited agent actually caused the failure) on every claim. "
+             "'selective': causal-judgment prompt only on claims citing a tool-execution agent "
+             "(e.g. Computer_terminal), lenient prompt otherwise -- targets the Computer_terminal "
+             "bias without the coverage collapse 'all' causes on reasoning-agent claims.",
+    )
     parser.add_argument("--out", default="results/system_results.json")
     parser.add_argument("--trajectory-dir", default="logs", help="per-run step-by-step trace output (observability); pass '' to skip writing")
     args = parser.parse_args()
@@ -64,6 +71,7 @@ def main() -> None:
 
     use_verifier = not args.no_verifier
     use_policy_checker = not args.no_policy_checker
+    causal_verifier: bool | str = {"off": False, "all": True, "selective": "selective"}[args.causal_verifier_mode]
 
     correct_agent = correct_both = verified_count = errors = 0
     per_run = []
@@ -73,7 +81,7 @@ def main() -> None:
         try:
             findings, trajectory = run_system_with_trace(
                 run, provider, ledger, use_verifier=use_verifier, use_policy_checker=use_policy_checker,
-                causal_verifier=args.causal_verifier,
+                causal_verifier=causal_verifier,
             )
         except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
             errors += 1
@@ -135,7 +143,7 @@ def main() -> None:
             {
                 "use_verifier": use_verifier,
                 "use_policy_checker": use_policy_checker,
-                "causal_verifier": args.causal_verifier,
+                "causal_verifier_mode": args.causal_verifier_mode,
                 "agent_accuracy": agent_acc,
                 "step_accuracy": step_acc,
                 "verified_rate": verified_rate,
