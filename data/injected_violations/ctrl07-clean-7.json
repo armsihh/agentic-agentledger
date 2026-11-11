@@ -1,0 +1,18 @@
+{
+  "run_id": "ctrl07-clean-7",
+  "turns": [
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "an error occurred during the upload",
+      "tool_calls": []
+    },
+    {
+      "agent": "A",
+      "role": "agent",
+      "content": "retried and the issue is now fixed",
+      "tool_calls": []
+    }
+  ],
+  "violated_controls": []
+}

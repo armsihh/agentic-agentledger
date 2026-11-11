@@ -1,0 +1,80 @@
+{
+  "accuracy": 0.3333333333333333,
+  "runs": [
+    {
+      "run_id": "run_001",
+      "prediction": {
+        "agent": "Uploader",
+        "step": 3
+      },
+      "ground_truth": {
+        "responsible_agent": "Uploader",
+        "decisive_step": 3
+      },
+      "correct": true,
+      "ledger_chain_ok": true,
+      "controls": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "evidence": "ledger_entries=5 events=5 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "evidence": "tool_calls=['http_get', 'normalize', 'upload'] missing_from_ledger=[]"
+        }
+      ]
+    },
+    {
+      "run_id": "run_002",
+      "prediction": {
+        "agent": "Deployer",
+        "step": 4
+      },
+      "ground_truth": {
+        "responsible_agent": "none",
+        "decisive_step": -1
+      },
+      "correct": false,
+      "ledger_chain_ok": true,
+      "controls": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "evidence": "ledger_entries=5 events=5 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "evidence": "tool_calls=['deploy', 'run_tests', 'search_docs', 'write_file'] missing_from_ledger=[]"
+        }
+      ]
+    },
+    {
+      "run_id": "run_003",
+      "prediction": {
+        "agent": "Planner",
+        "step": 4
+      },
+      "ground_truth": {
+        "responsible_agent": "Analyst",
+        "decisive_step": 2
+      },
+      "correct": false,
+      "ledger_chain_ok": true,
+      "controls": [
+        {
+          "control_id": "CTRL-01",
+          "passed": true,
+          "evidence": "ledger_entries=5 events=5 chain_ok=True break_index=None"
+        },
+        {
+          "control_id": "CTRL-02",
+          "passed": true,
+          "evidence": "tool_calls=['compute', 'read_sheet', 'write_report'] missing_from_ledger=[]"
+        }
+      ]
+    }
+  ]
+}

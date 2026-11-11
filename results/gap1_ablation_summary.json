@@ -1,0 +1,125 @@
+{
+  "n_sample": 20,
+  "evaluation_note": "n=20/20 clean runs, all four conditions, same model (openai/gpt-oss-120b after qwen/qwen3.8-27b fallback)",
+  "with_verifier": {
+    "agent_accuracy": 0.35,
+    "step_accuracy": 0.1,
+    "verified_rate": 0.6,
+    "n_evaluated": 20,
+    "n_errored": 0,
+    "grounded_correct_count": 6,
+    "verified_total": 12,
+    "unsupported_claim_rate": 0.5,
+    "provider_stats": {
+      "call_count": 52,
+      "total_latency_seconds": 998.339,
+      "avg_latency_seconds": 19.199,
+      "total_chars_in": 463290,
+      "total_chars_out": 6969,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-120b",
+        "model_switches": [
+          "qwen/qwen3.8-27b"
+        ]
+      }
+    }
+  },
+  "without_verifier": {
+    "agent_accuracy": 0.35,
+    "step_accuracy": 0.1,
+    "verified_rate": 1.0,
+    "n_evaluated": 20,
+    "n_errored": 0,
+    "grounded_correct_count": 7,
+    "verified_total": 20,
+    "unsupported_claim_rate": 0.65,
+    "provider_stats": {
+      "call_count": 20,
+      "total_latency_seconds": 551.207,
+      "avg_latency_seconds": 27.56,
+      "total_chars_in": 232985,
+      "total_chars_out": 4180,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-120b",
+        "model_switches": [
+          "qwen/qwen3.8-27b"
+        ]
+      }
+    }
+  },
+  "causal_verifier_all": {
+    "agent_accuracy": 0.3,
+    "step_accuracy": 0.05,
+    "verified_rate": 0.25,
+    "n_evaluated": 20,
+    "n_errored": 0,
+    "grounded_correct_count": 3,
+    "verified_total": 5,
+    "unsupported_claim_rate": 0.4,
+    "provider_stats": {
+      "call_count": 54,
+      "total_latency_seconds": 999.871,
+      "avg_latency_seconds": 18.516,
+      "total_chars_in": 505467,
+      "total_chars_out": 3634,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-20b",
+        "model_switches": [
+          "qwen/qwen3.8-27b",
+          "openai/gpt-oss-120b"
+        ]
+      }
+    }
+  },
+  "causal_verifier_selective": {
+    "agent_accuracy": 0.55,
+    "step_accuracy": 0.15,
+    "verified_rate": 0.75,
+    "n_evaluated": 20,
+    "n_errored": 0,
+    "grounded_correct_count": 10,
+    "verified_total": 15,
+    "unsupported_claim_rate": 0.3333333333333333,
+    "provider_stats": {
+      "call_count": 58,
+      "total_latency_seconds": 1018.908,
+      "avg_latency_seconds": 17.567,
+      "total_chars_in": 440409,
+      "total_chars_out": 5760,
+      "provider_switches": [],
+      "active_provider": "GroqProvider",
+      "active_provider_stats": {
+        "call_count": 0,
+        "total_latency_seconds": 0.0,
+        "avg_latency_seconds": 0.0,
+        "total_chars_in": 0,
+        "total_chars_out": 0,
+        "model": "openai/gpt-oss-120b",
+        "model_switches": [
+          "qwen/qwen3.8-27b"
+        ]
+      }
+    }
+  }
+}

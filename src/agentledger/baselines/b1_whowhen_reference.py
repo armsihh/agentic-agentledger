@@ -25,9 +25,15 @@ class B1Prediction:
     raw_response: str
 
 
+_MAX_LOG_CHARS = 12000  # keeps prompts under free-tier token-per-minute caps; tail-truncate like B0
+
+
 def _history_text(run: RunLog, start: int = 0, end: int | None = None) -> str:
     end = len(run.events) - 1 if end is None else end
-    return "\n".join(f"[{i}] {run.events[i].agent}: {run.events[i].content}" for i in range(start, end + 1))
+    text = "\n".join(f"[{i}] {run.events[i].agent}: {run.events[i].content}" for i in range(start, end + 1))
+    if len(text) > _MAX_LOG_CHARS:
+        text = "...[truncated]...\n" + text[-_MAX_LOG_CHARS:]
+    return text
 
 
 # all-at-once: mirrors Lib/utils.py::all_at_once
@@ -55,6 +61,8 @@ def run_all_at_once(run: RunLog, provider: LLMProvider) -> B1Prediction:
         parsed = json.loads(raw)
         agent, step = parsed["agent"], int(parsed["step"])
     except Exception:
+        # catches TypeError too (a reply that parses as valid JSON but isn't a dict, e.g. a
+        # bare number, where parsed["agent"] raises "not subscriptable" instead of KeyError).
         agent, step = "unknown", -1
     return B1Prediction(run.run_id, "all_at_once", agent, step, raw)
 

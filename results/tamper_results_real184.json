@@ -1,0 +1,114 @@
+{
+  "n_clean_runs": 184,
+  "n_tamper_cases": 6624,
+  "seed": 0,
+  "data": "real Who&When release",
+  "total_events": 4092,
+  "summary_by_mode": {
+    "chain": {
+      "detected": 4968,
+      "detection_rate": 0.75,
+      "false_alarms": 0,
+      "false_alarm_rate": 0.0
+    },
+    "chain+graph": {
+      "detected": 5467,
+      "detection_rate": 0.8253321256038647,
+      "false_alarms": 0,
+      "false_alarm_rate": 0.0
+    },
+    "anchored": {
+      "detected": 6624,
+      "detection_rate": 1.0,
+      "false_alarms": 0,
+      "false_alarm_rate": 0.0
+    }
+  },
+  "per_tamper_type": {
+    "edit_content": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "edit_agent": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "edit_tool_result": {
+      "applied": 0,
+      "chain": 0,
+      "chain+graph": 0,
+      "anchored": 0
+    },
+    "edit_provenance_link": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "edit_last_entry": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "delete_middle": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "delete_first": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "reorder_swap": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "insert_forged": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "renumber_only": {
+      "applied": 552,
+      "chain": 552,
+      "chain+graph": 552,
+      "anchored": 552
+    },
+    "truncate_tail": {
+      "applied": 552,
+      "chain": 0,
+      "chain+graph": 0,
+      "anchored": 552
+    },
+    "edit_rechain": {
+      "applied": 552,
+      "chain": 0,
+      "chain+graph": 0,
+      "anchored": 552
+    },
+    "delete_rechain": {
+      "applied": 552,
+      "chain": 0,
+      "chain+graph": 499,
+      "anchored": 552
+    }
+  },
+  "overhead": {
+    "events": 4092,
+    "append_ms_per_event": 0.05242820951599675,
+    "verify_ms_per_event": 0.05111787226184615,
+    "target_ms_per_event": 10.0
+  },
+  "note": "synthetic, deterministic tampering applied to the logs. Unanchored chain detection of truncate_tail / *_rechain is impossible by construction; only the anchored mode catches them."
+}

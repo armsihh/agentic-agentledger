@@ -1,0 +1,83 @@
+{
+  "run_id": "d1af70ea-a9a4-421a-b9cc-94b5e02f1788",
+  "trajectory": [
+    {
+      "stage": "ledger_check",
+      "ledger_ok": true,
+      "break_index": null
+    },
+    {
+      "stage": "retrieve",
+      "candidate_ids": [
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-0",
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-6",
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-7",
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-8",
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-9"
+      ]
+    },
+    {
+      "stage": "auditor_propose",
+      "raw_response": "{\"agent\": \"Validation_Expert\", \"step\": 7, \"cited_record_ids\": [\"1\", \"2\"], \"rationale\": \"The error occurred during initial data formatting before population values were corrected (record ID 1), and the execution succeeded after correction (record ID 2). The failing step is when calculating the difference (record ID 7), which is correct after fixing the syntax error.\"} ",
+      "agent": "Validation_Expert",
+      "step": 7,
+      "cited_record_ids": [
+        "1",
+        "2"
+      ],
+      "rationale": "The error occurred during initial data formatting before population values were corrected (record ID 1), and the execution succeeded after correction (record ID 2). The failing step is when calculating the difference (record ID 7), which is correct after fixing the syntax error."
+    },
+    {
+      "stage": "verifier_check",
+      "raw_response": "",
+      "verified": false,
+      "reason": "cited record ids not found in run: ['1', '2']"
+    },
+    {
+      "stage": "auditor_revise",
+      "raw_response": "{\"agent\": \"Computer_terminal\", \"step\": 8, \"cited_record_ids\": [\"d1af70ea-a9a4-421a-b9cc-94b5e02f1788-8\"], \"rationale\": \"The Agent, Computer_terminal, retrieved the correct population figures for Seattle (737,015) and Colville (4,965) and calculated the difference correctly. The output (732,050) matches the given calculated outcome (732,050). Based on the cited records (identified in record IDs ['D1AF70EA-A9A4-421A-B9CC-94B5E02F1788-8], the claim seems valid as the Agent, Computer_terminal, conducted the necessary steps to solve the problem and provided the correct answer.\"} ",
+      "agent": "Computer_terminal",
+      "step": 8,
+      "cited_record_ids": [
+        "d1af70ea-a9a4-421a-b9cc-94b5e02f1788-8"
+      ],
+      "rationale": "The Agent, Computer_terminal, retrieved the correct population figures for Seattle (737,015) and Colville (4,965) and calculated the difference correctly. The output (732,050) matches the given calculated outcome (732,050). Based on the cited records (identified in record IDs ['D1AF70EA-A9A4-421A-B9CC-94B5E02F1788-8], the claim seems valid as the Agent, Computer_terminal, conducted the necessary steps to solve the problem and provided the correct answer."
+    },
+    {
+      "stage": "verifier_recheck",
+      "raw_response": "Yes ",
+      "verified": true,
+      "reason": "cited records support the claim"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-01",
+      "passed": true,
+      "evidence": "ledger_entries=10 events=10 chain_ok=True break_index=None"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-02",
+      "passed": true,
+      "evidence": "tool_calls=[] missing_from_ledger=[]"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-03",
+      "passed": true,
+      "evidence": "all high-risk tool calls had a prior approval signal"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-07",
+      "passed": true,
+      "evidence": "error_steps=[6, 7] corrective_action_found_after=True"
+    },
+    {
+      "stage": "policy_check",
+      "control_id": "CTRL-11",
+      "passed": true,
+      "evidence": "no sensitive-looking argument keys found in any tool call"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "all_at_once": {
+    "agent_accuracy": 0.3333333333333333,
+    "step_accuracy": 0.3333333333333333,
+    "runs": [
+      {
+        "run_id": "run_001",
+        "predicted_agent": "Uploader",
+        "predicted_step": 3,
+        "ground_truth": {
+          "responsible_agent": "Uploader",
+          "decisive_step": 3
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "run_002",
+        "predicted_agent": "Deployer",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "none",
+          "decisive_step": -1
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "run_003",
+        "predicted_agent": "Planner",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "Analyst",
+          "decisive_step": 2
+        },
+        "agent_correct": false,
+        "step_correct": false
+      }
+    ]
+  },
+  "step_by_step": {
+    "agent_accuracy": 0.6666666666666666,
+    "step_accuracy": 0.6666666666666666,
+    "runs": [
+      {
+        "run_id": "run_001",
+        "predicted_agent": "Uploader",
+        "predicted_step": 3,
+        "ground_truth": {
+          "responsible_agent": "Uploader",
+          "decisive_step": 3
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "run_002",
+        "predicted_agent": "Deployer",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "none",
+          "decisive_step": -1
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "run_003",
+        "predicted_agent": "Analyst",
+        "predicted_step": 2,
+        "ground_truth": {
+          "responsible_agent": "Analyst",
+          "decisive_step": 2
+        },
+        "agent_correct": true,
+        "step_correct": true
+      }
+    ]
+  },
+  "binary_search": {
+    "agent_accuracy": 0.3333333333333333,
+    "step_accuracy": 0.3333333333333333,
+    "runs": [
+      {
+        "run_id": "run_001",
+        "predicted_agent": "Uploader",
+        "predicted_step": 3,
+        "ground_truth": {
+          "responsible_agent": "Uploader",
+          "decisive_step": 3
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "run_002",
+        "predicted_agent": "Deployer",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "none",
+          "decisive_step": -1
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "run_003",
+        "predicted_agent": "Planner",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "Analyst",
+          "decisive_step": 2
+        },
+        "agent_correct": false,
+        "step_correct": false
+      }
+    ]
+  }
+}

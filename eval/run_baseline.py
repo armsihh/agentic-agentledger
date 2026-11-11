@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from agentledger.baselines.b0_single_call import run_b0
 from agentledger.controls import CONTROL_CATALOGUE
-from agentledger.ingestion import load_logs_from_dir
+from agentledger.ingestion import load_logs_from_dir, load_whowhen_release_full
 from agentledger.ledger import IntegrityLedger
 from agentledger.providers import get_default_provider
 from agentledger.tools import check_control
@@ -36,19 +36,32 @@ def build_ledger(run) -> IntegrityLedger:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--logs", default="data/sample_logs")
+    parser.add_argument("--real-whowhen-root", default=None, help="Who&When/ dir holding both Hand-Crafted/ and Algorithm-Generated/")
+    parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--out", default="results/baseline_b0_results.json")
     args = parser.parse_args()
 
     provider = get_default_provider()
     print(f"Using provider: {type(provider).__name__}")
 
-    runs = load_logs_from_dir(args.logs)
-    print(f"Loaded {len(runs)} run(s) from {args.logs}")
+    if args.real_whowhen_root:
+        runs = load_whowhen_release_full(args.real_whowhen_root, args.limit)
+        print(f"Loaded {len(runs)} real Who&When run(s) (Hand-Crafted + Algorithm-Generated) from {args.real_whowhen_root}")
+    else:
+        runs = load_logs_from_dir(args.logs)
+        print(f"Loaded {len(runs)} sample run(s) from {args.logs}")
 
     results = []
-    correct = 0
-    for run in runs:
+    correct_agent = correct_both = errors = 0
+    for i, run in enumerate(runs, 1):
+        print(f"  {i}/{len(runs)} {run.run_id}", end="\r")
         ledger = build_ledger(run)
-        prediction = run_b0(run, provider)
+        try:
+            prediction = run_b0(run, provider)
+        except Exception as exc:  # free-tier flakiness shouldn't lose the whole batch's progress
+            errors += 1
+            results.append({"run_id": run.run_id, "error": str(exc)})
+            continue
 
         chain_ok, _ = ledger.verify()
         control_results = []
@@ -56,34 +69,38 @@ def main() -> None:
             cr = check_control(control["id"], run, ledger)
             control_results.append({"control_id": cr.control_id, "passed": cr.passed, "evidence": cr.evidence})
 
-        is_correct = (
-            run.ground_truth is not None
-            and prediction.agent == run.ground_truth.responsible_agent
-            and prediction.step == run.ground_truth.decisive_step
-        )
-        correct += int(is_correct)
+        agent_ok = run.ground_truth is not None and prediction.agent == run.ground_truth.responsible_agent
+        both_ok = agent_ok and run.ground_truth is not None and prediction.step == run.ground_truth.decisive_step
+        correct_agent += int(agent_ok)
+        correct_both += int(both_ok)
 
         results.append(
             {
                 "run_id": run.run_id,
                 "prediction": {"agent": prediction.agent, "step": prediction.step},
                 "ground_truth": run.ground_truth.model_dump() if run.ground_truth else None,
-                "correct": is_correct,
+                "agent_correct": agent_ok,
+                "step_correct": both_ok,
                 "ledger_chain_ok": chain_ok,
                 "controls": control_results,
             }
         )
-        print(
-            f"  {run.run_id}: predicted agent={prediction.agent} step={prediction.step} "
-            f"| correct={is_correct} | ledger_ok={chain_ok}"
-        )
 
-    accuracy = correct / len(runs) if runs else 0.0
-    print(f"\nB0 run-level accuracy on {len(runs)} sample run(s): {accuracy:.2%}")
+    n = len(runs) or 1
+    if errors:
+        print(f"\n{errors} run(s) errored out and were excluded from accuracy")
+    agent_acc, step_acc = correct_agent / n, correct_both / n
+    print(f"\nB0 agent-level accuracy: {agent_acc:.2%} | step-level accuracy: {step_acc:.2%} (n={len(runs)})")
 
-    out_path = Path("results/baseline_b0_results.json")
-    out_path.parent.mkdir(exist_ok=True)
-    out_path.write_text(json.dumps({"accuracy": accuracy, "runs": results}, indent=2), encoding="utf-8")
+    out_path = Path(args.out)
+    out_path.parent.mkdir(exist_ok=True, parents=True)
+    out_path.write_text(
+        json.dumps(
+            {"agent_accuracy": agent_acc, "step_accuracy": step_acc, "provider_stats": provider.stats(), "runs": results},
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     print(f"Wrote {out_path}")
 
 

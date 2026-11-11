@@ -2,3 +2,5 @@ pydantic>=2.6
 pytest>=8.0
 # optional, only needed for the hosted provider:
 # anthropic>=0.40
+# optional, free-tier provider actually used for the real Who&When runs:
+# groq>=0.11

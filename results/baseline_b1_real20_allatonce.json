@@ -1,0 +1,239 @@
+{
+  "all_at_once": {
+    "agent_accuracy": 0.4,
+    "step_accuracy": 0.25,
+    "runs": [
+      {
+        "run_id": "6e3be83d1949fa52cba03fb1ce4b5b3bf7e37a83fd7d67694b10b2e439d90cf8",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 12
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "55f4258484c5b398956133128a50462a767da211f8f72aa5ac5bbffb9bcbba1a",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 4
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "0a65cb96-cb6e-4a6a-8aae-c1084f613456",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 32
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "f88066d274e265edd6cd9d61cd80a41accb3a14baf2297652fdd05cdf716d455",
+        "predicted_agent": "WebSurfer",
+        "predicted_step": 8,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 8
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "ed58682d-bc52-4baa-9eb0-4eb81e1edacc",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 12
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "e6bc98089608217e45b6956a46518fe3cce64a799b3ac43c6974c449ae14c408",
+        "predicted_agent": "WebSurfer",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "Orchestrator",
+          "decisive_step": 5
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "a1e91b78-d3d8-4675-bb8d-62741b4b68a6",
+        "predicted_agent": "WebSurfer",
+        "predicted_step": 20,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 8
+        },
+        "agent_correct": true,
+        "step_correct": false
+      },
+      {
+        "run_id": "9e31099fffa6a3891c94934fd4fc2f3f522d51c1904ff3561f3a10e4bf245821",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "WebSurfer",
+          "decisive_step": 8
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "e2d69698-bc99-4e85-9880-67eaccd66e6c",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "Orchestrator",
+          "decisive_step": 25
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "8ad84bd6fe38481ba49e7ad1f6fbd43219a999074e5c6fc940003281f55ec65b",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "Orchestrator",
+          "decisive_step": 9
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "4d51c4bf-4b0e-4f3d-897b-3f6687a7d9f2",
+        "predicted_agent": "Excel_Expert",
+        "predicted_step": 0,
+        "ground_truth": {
+          "responsible_agent": "Excel_Expert",
+          "decisive_step": 0
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "cf106601-ab4f-4af9-b045-5295fe67b37d",
+        "predicted_agent": "Verification_Expert",
+        "predicted_step": 2,
+        "ground_truth": {
+          "responsible_agent": "Verification_Expert",
+          "decisive_step": 2
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "df6561b2-7ee5-4540-baab-5095f742716a",
+        "predicted_agent": "Verification_Expert",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "Verification_Expert",
+          "decisive_step": 4
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "f2feb6a4-363c-4c09-a804-0db564eafd68",
+        "predicted_agent": "HawaiiRealEstate_Expert",
+        "predicted_step": 2,
+        "ground_truth": {
+          "responsible_agent": "HawaiiRealEstate_Expert",
+          "decisive_step": 2
+        },
+        "agent_correct": true,
+        "step_correct": true
+      },
+      {
+        "run_id": "42d4198c-5895-4f0a-b0c0-424a66465d83",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "DataVerification_Expert",
+          "decisive_step": 3
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "b816bfce-3d80-4913-a07d-69b752ce6377",
+        "predicted_agent": "Literary_Analysis_Expert",
+        "predicted_step": 5,
+        "ground_truth": {
+          "responsible_agent": "Literary_Analysis_Expert",
+          "decisive_step": 1
+        },
+        "agent_correct": true,
+        "step_correct": false
+      },
+      {
+        "run_id": "5d0080cb-90d7-4712-bc33-848150e917d3",
+        "predicted_agent": "ScientificPaperAnalysis_Expert",
+        "predicted_step": 4,
+        "ground_truth": {
+          "responsible_agent": "ScientificPaperAnalysis_Expert",
+          "decisive_step": 5
+        },
+        "agent_correct": true,
+        "step_correct": false
+      },
+      {
+        "run_id": "65afbc8a-89ca-4ad5-8d62-355bb401f61d",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "AlgorithmDesign_Expert",
+          "decisive_step": 4
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "e142056d-56ab-4352-b091-b56054bd1359",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "GameTheory_Expert",
+          "decisive_step": 1
+        },
+        "agent_correct": false,
+        "step_correct": false
+      },
+      {
+        "run_id": "d1af70ea-a9a4-421a-b9cc-94b5e02f1788",
+        "predicted_agent": "unknown",
+        "predicted_step": -1,
+        "ground_truth": {
+          "responsible_agent": "Validation_Expert",
+          "decisive_step": 5
+        },
+        "agent_correct": false,
+        "step_correct": false
+      }
+    ]
+  },
+  "provider_stats": {
+    "call_count": 20,
+    "total_latency_seconds": 448.828,
+    "avg_latency_seconds": 22.441,
+    "total_chars_in": 208289,
+    "total_chars_out": 374,
+    "model": "openai/gpt-oss-120b",
+    "model_switches": [
+      "qwen/qwen3.8-27b"
+    ]
+  }
+}

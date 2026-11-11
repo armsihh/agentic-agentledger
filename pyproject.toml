@@ -9,6 +9,7 @@ dependencies = [
 
 [project.optional-dependencies]
 hosted = ["anthropic>=0.40"]
+groq = ["groq>=0.11"]
 dev = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]

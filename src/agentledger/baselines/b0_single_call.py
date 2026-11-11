@@ -23,8 +23,14 @@ class B0Prediction:
     raw_response: str
 
 
+_MAX_LOG_CHARS = 12000  # keeps prompts under free-tier token-per-minute caps; tail-truncate like B10 describes
+
+
 def _format_turns(run: RunLog) -> str:
-    return "\n".join(f"[{e.step_index}] {e.agent}: {e.content}" for e in run.events)
+    text = "\n".join(f"[{e.step_index}] {e.agent}: {e.content}" for e in run.events)
+    if len(text) > _MAX_LOG_CHARS:
+        text = "...[truncated]...\n" + text[-_MAX_LOG_CHARS:]
+    return text
 
 
 def run_b0(run: RunLog, provider: LLMProvider) -> B0Prediction:
@@ -33,6 +39,8 @@ def run_b0(run: RunLog, provider: LLMProvider) -> B0Prediction:
     try:
         parsed = json.loads(raw)
         agent, step = parsed["agent"], int(parsed["step"])
-    except (json.JSONDecodeError, KeyError, ValueError):
+    except (json.JSONDecodeError, KeyError, ValueError, TypeError):
+        # TypeError covers a reply that parses as valid JSON but isn't a dict (e.g. a bare
+        # number or list), where parsed["agent"] raises "not subscriptable" instead of KeyError.
         agent, step = "unknown", -1
     return B0Prediction(run_id=run.run_id, agent=agent, step=step, raw_response=raw)
