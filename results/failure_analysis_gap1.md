@@ -136,7 +136,11 @@ fallback — not a different-model confound):
 | **Causal, selective** (`results/system_results_causal_selective.json`) | **55.0%** | **15.0%** | **75.0%** | **33.3%** (5/15) |
 
 Selective beats both other configurations on every metric, and 55.0% agent accuracy is the first
-result anywhere in this project that beats B1's reproduced 40.0% on raw accuracy. Checked against
+time our own Auditor+Retriever+Verifier pipeline beats B1's reproduced 40.0% on raw accuracy —
+**note this is not the first result in the project to beat B1**: E1, the non-agentic single-call
+baseline, separately reaches 50.0% and already beats B1 on raw accuracy (`results/baseline_b0_real20.json`).
+The honest framing is "our best pipeline configuration," not "the only thing that beats the base
+paper." Checked against
 the 5 original Computer_terminal-bias cases specifically: `5d0080cb` and `d1af70ea` are now fully
 correct; `65afbc8a` still guesses `Computer_terminal` but is correctly rejected (`verified=false`)
 instead of falsely verified; `cf106601` and `f2feb6a4` are still wrong but no longer blame the
@@ -150,7 +154,19 @@ Fisher's exact test on unsupported-claim rate, selective (10/15 correct) vs. the
 (8/20 correct): p≈0.53. Same test, selective vs. the lenient default (7/20 correct): p≈0.34. This
 is the identical caveat the project already applies to the headline 65.0%→50.0% result (p≈0.47) —
 applying it here too, rather than letting the more exciting number skip the check, is the whole
-point of running it. The usual caveat also applies — this is one run, same as every other n=20
+point of running it.
+
+**Train/test overlap, disclosed plainly.** The original Verifier prompt recalibration (lenient
+wording) was already flagged elsewhere as tuned on this same 20-log set with no held-out split.
+The selective fix carries the identical problem one level deeper: the Computer_terminal bias was
+*discovered* by reading this sample's own failures, and the fix was *designed* specifically to
+catch that pattern, then *tested* on the same 20 logs. This is not independent validation — it's
+closer to fitting a rule to the test set than an a priori hypothesis test. The 55.0% figure should
+be read as "a fix that works on the failures we found it on," not as evidence it generalizes.
+Validating on a different sample (or the held-out logs the project otherwise doesn't have) is
+necessary before trusting this number for anything beyond "this specific mechanism is real."
+
+The usual caveat also applies — this is one run, same as every other n=20
 number in this project — but it is a real, same-model, controlled comparison (only the Verifier's
 prompt-selection logic differs), and it is the strongest configuration found for Gap 1. Worth
 considering as the new default, not just a footnote, but validate at larger n before leaning on
